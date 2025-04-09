@@ -1,0 +1,6 @@
+database_config:
+  server: "db2025ntua.database.windows.net"
+  port: 1433
+  database: "db2025omadafotia"
+  username: "db2025ntua"
+  password: "Password123!"
