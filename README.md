@@ -20,5 +20,3 @@ Name of the target database:
 
 - **Username**: `db2025ntua`
 - **Password**: `TH7knXjZzL4-AV3`
-
-test
