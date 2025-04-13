@@ -1,8 +1,24 @@
+DROP TABLE IF EXISTS Rating;
+DROP TABLE IF EXISTS Event_Staff;
+DROP TABLE IF EXISTS Staff;
+DROP TABLE IF EXISTS Ticket;
+DROP TABLE IF EXISTS Visitor;
+DROP TABLE IF EXISTS Band_Member;
+DROP TABLE IF EXISTS Band;
+DROP TABLE IF EXISTS Artist_Genre;
+DROP TABLE IF EXISTS Performance;
+DROP TABLE IF EXISTS Event;
+DROP TABLE IF EXISTS Artist;
+DROP TABLE IF EXISTS Scene;
+DROP TABLE IF EXISTS Festival;
+DROP TABLE IF EXISTS Location;
+
 -- Create Locations table
-CREATE TABLE Location (
-    location_id SERIAL PRIMARY KEY,
+CREATE TABLE Location
+(
+    location_id INT IDENTITY(1,1) PRIMARY KEY,
     address VARCHAR(255) NOT NULL,
-    latitude  DECIMAL(9,6) NOT NULL,
+    latitude DECIMAL(9,6) NOT NULL,
     longitude DECIMAL(9,6) NOT NULL,
     city VARCHAR(100) NOT NULL,
     country VARCHAR(100) NOT NULL,
@@ -10,8 +26,9 @@ CREATE TABLE Location (
 );
 
 -- Create Festivals table
-CREATE TABLE Festival (
-    festival_id SERIAL PRIMARY KEY,
+CREATE TABLE Festival
+(
+    festival_id INT IDENTITY(1,1) PRIMARY KEY,
     year INT NOT NULL CHECK (year >= 1900),
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
@@ -19,18 +36,31 @@ CREATE TABLE Festival (
     FOREIGN KEY (location_id) REFERENCES Location(location_id)
 );
 
--- Create Scenes table (Κτίρια / Μουσικές Σκηνές)
-CREATE TABLE Scene (
-    scene_id SERIAL PRIMARY KEY,
+-- Create Scenes table
+CREATE TABLE Scene
+(
+    scene_id INT IDENTITY(1,1) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT,
     max_capacity INT NOT NULL CHECK (max_capacity > 0),
     equipment_info TEXT
 );
 
--- Create Events table (Παραστάσεις)
-CREATE TABLE Event (
-    event_id SERIAL PRIMARY KEY,
+-- Create Artists table
+CREATE TABLE Artist
+(
+    artist_id INT IDENTITY(1,1) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    stage_name VARCHAR(100),
+    date_of_birth DATE NOT NULL,
+    website VARCHAR(255),
+    instagram_profile VARCHAR(255)
+);
+
+-- Create Events table
+CREATE TABLE Event
+(
+    event_id INT IDENTITY(1,1) PRIMARY KEY,
     festival_id INT NOT NULL,
     scene_id INT NOT NULL,
     event_date DATE NOT NULL,
@@ -38,32 +68,25 @@ CREATE TABLE Event (
     FOREIGN KEY (scene_id) REFERENCES Scene(scene_id)
 );
 
--- Create Performances table
-CREATE TABLE Performance (
-    performance_id SERIAL PRIMARY KEY,
+-- Fix for Performance table
+CREATE TABLE Performance
+(
+    performance_id INT IDENTITY(1,1) PRIMARY KEY,
     event_id INT NOT NULL,
     artist_id INT NOT NULL,
     performance_type VARCHAR(50) CHECK (performance_type IN ('warm up','headline','Special guest')),
     start_time TIME NOT NULL,
-    duration INTERVAL NOT NULL CHECK (duration <= INTERVAL '3 hours'),
-    break_duration INTERVAL CHECK (break_duration BETWEEN INTERVAL '5 minutes' AND INTERVAL '30 minutes'),
-    FOREIGN KEY (event_id) REFERENCES Event(event_id)
-    -- FOREIGN KEY (artist_id) to be defined after Artist table
-);
-
--- Create Artists table
-CREATE TABLE Artist (
-    artist_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    stage_name VARCHAR(100),
-    date_of_birth DATE NOT NULL,
-    website VARCHAR(255),
-    instagram_profile VARCHAR(255)
-    -- Additional columns can be stored (genres, sub-genres) via a join table.
+    duration TIME NOT NULL CHECK (DATEDIFF(MINUTE, '00:00:00', duration) <= 180),
+    -- Max 3 hours
+    break_duration TIME CHECK (DATEDIFF(MINUTE, '00:05:00', break_duration) BETWEEN 0 AND 25),
+    -- 5 to 30 minutes
+    FOREIGN KEY (event_id) REFERENCES Event(event_id),
+    FOREIGN KEY (artist_id) REFERENCES Artist(artist_id)
 );
 
 -- Create table for artist genres (many-to-many relationship)
-CREATE TABLE Artist_Genre (
+CREATE TABLE Artist_Genre
+(
     artist_id INT NOT NULL,
     genre VARCHAR(50) NOT NULL,
     subgenre VARCHAR(50),
@@ -72,13 +95,17 @@ CREATE TABLE Artist_Genre (
 );
 
 -- Create table for Band membership (if artist is member of a band)
-CREATE TABLE Band (
-    band_id SERIAL PRIMARY KEY,
+CREATE TABLE Band
+(
+    band_id INT IDENTITY(1,1) PRIMARY KEY,
     band_name VARCHAR(100) NOT NULL,
     formation_date DATE,
     website VARCHAR(255)
 );
-CREATE TABLE Band_Member (
+
+
+CREATE TABLE Band_Member
+(
     band_id INT NOT NULL,
     artist_id INT NOT NULL,
     PRIMARY KEY (band_id, artist_id),
@@ -87,17 +114,19 @@ CREATE TABLE Band_Member (
 );
 
 -- Create Visitors table
-CREATE TABLE Visitor (
-    visitor_id SERIAL PRIMARY KEY,
+CREATE TABLE Visitor
+(
+    visitor_id INT IDENTITY(1,1) PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     contact VARCHAR(255),
     age INT CHECK (age > 0)
 );
 
--- Create Tickets table
-CREATE TABLE Ticket (
-    ticket_id SERIAL PRIMARY KEY,
+-- Ticket table
+CREATE TABLE Ticket
+(
+    ticket_id INT IDENTITY(1,1) PRIMARY KEY,
     event_id INT NOT NULL,
     visitor_id INT NOT NULL,
     purchase_date DATE NOT NULL,
@@ -105,23 +134,26 @@ CREATE TABLE Ticket (
     payment_method VARCHAR(50) CHECK (payment_method IN ('credit card','debit card','bank transfer','not cash')),
     ean BIGINT NOT NULL UNIQUE,
     ticket_category VARCHAR(50),
-    used BOOLEAN DEFAULT FALSE,
+    used BIT DEFAULT 0,
+    -- Use BIT (0 for FALSE, 1 for TRUE)
     CONSTRAINT unique_ticket_per_visitor_event UNIQUE (event_id, visitor_id),
     FOREIGN KEY (event_id) REFERENCES Event(event_id),
     FOREIGN KEY (visitor_id) REFERENCES Visitor(visitor_id)
 );
 
 -- Create Staff table
-CREATE TABLE Staff (
-    staff_id SERIAL PRIMARY KEY,
+CREATE TABLE Staff
+(
+    staff_id INT IDENTITY(1,1) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    age INT CHECK(age>0),
+    age INT CHECK(age > 0),
     role VARCHAR(50) NOT NULL,
     experience_level VARCHAR(20) CHECK (experience_level IN ('εικικευόμενος', 'αρχάριος', 'μέσος', 'έμπειρος', 'πολύ έμπειρος'))
 );
 
 -- Create Event_Staff table
-CREATE TABLE Event_Staff (
+CREATE TABLE Event_Staff
+(
     event_id INT NOT NULL,
     scene_id INT NOT NULL,
     staff_id INT NOT NULL,
@@ -133,15 +165,19 @@ CREATE TABLE Event_Staff (
 );
 
 -- Create Ratings table
-CREATE TABLE Rating (
-    rating_id SERIAL PRIMARY KEY,
+CREATE TABLE Rating
+(
+    rating_id INT IDENTITY(1,1) PRIMARY KEY,
     ticket_id INT NOT NULL,
-    artist_id INT NOT NULL,
+    performance_id INT NOT NULL,
     interpretation_score INT CHECK (interpretation_score BETWEEN 1 AND 5),
+    sound_lighting_score INT CHECK (sound_lighting_score BETWEEN 1 AND 5),
+    stage_presence_score INT CHECK (stage_presence_score BETWEEN 1 AND 5),
+    organization_score INT CHECK (organization_score BETWEEN 1 AND 5),
     overall_score INT CHECK (overall_score BETWEEN 1 AND 5),
-    -- additional rating criteria columns...
+    rating_date DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (ticket_id) REFERENCES Ticket(ticket_id),
-    FOREIGN KEY (artist_id) REFERENCES Artist(artist_id)
+    FOREIGN KEY (performance_id) REFERENCES Performance(performance_id)
 );
 
 -- Indexes (sample)
