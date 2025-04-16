@@ -28,15 +28,9 @@ CREATE TABLE Location
 );
 
 -- Create Festivals table
-<<<<<<< HEAD
-CREATE TABLE Festival (
-    festival_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-=======
 CREATE TABLE Festival
 (
     festival_id INT IDENTITY(1,1) PRIMARY KEY,
->>>>>>> 5c40fba31adc24920dbf93425ab679722eac1847
     year INT NOT NULL CHECK (year >= 1900),
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
@@ -46,16 +40,10 @@ CREATE TABLE Festival
     FOREIGN KEY (location_id) REFERENCES Location(location_id)
 );
 
-<<<<<<< HEAD
--- Create Stages table (Κτίρια / Μουσικές Σκηνές)
-CREATE TABLE Stage (
-    stage_id SERIAL PRIMARY KEY,
-=======
 -- Create Scenes table
 CREATE TABLE Scene
 (
     scene_id INT IDENTITY(1,1) PRIMARY KEY,
->>>>>>> 5c40fba31adc24920dbf93425ab679722eac1847
     name VARCHAR(100) NOT NULL,
     description TEXT,
     max_capacity INT NOT NULL CHECK (max_capacity > 0),
@@ -99,36 +87,12 @@ CREATE TABLE Performance
     band_id INT,
     performance_type VARCHAR(50) CHECK (performance_type IN ('warm up','headline','Special guest')),
     start_time TIME NOT NULL,
-<<<<<<< HEAD
-    duration INTERVAL NOT NULL CHECK (duration <= INTERVAL '3 hours'),
-    break_duration INTERVAL CHECK (break_duration BETWEEN INTERVAL '5 minutes' AND INTERVAL '30 minutes'),
-    stage_id INT,
-    image_url VARCHAR(255),
-    description TEXT,
-    FOREIGN KEY (event_id) REFERENCES Event(event_id),
-    FOREIGN KEY (artist_id) REFERENCES Artist(artist_id),
-    FOREIGN KEY (band_id) REFERENCES Band(band_id),
-    FOREIGN KEY (stage_id) REFERENCES Stage(stage_id)
-);
-
--- Create Artists table
-CREATE TABLE Artist (
-    artist_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    alias VARCHAR(100),
-    date_of_birth DATE NOT NULL,
-    website VARCHAR(255),
-    instagram_profile VARCHAR(255),
-    image_url VARCHAR(255),
-    description TEXT
-=======
     duration TIME NOT NULL CHECK (DATEDIFF(MINUTE, '00:00:00', duration) <= 180),
     -- Max 3 hours
     break_duration TIME CHECK (DATEDIFF(MINUTE, '00:05:00', break_duration) BETWEEN 0 AND 25),
     -- 5 to 30 minutes
     FOREIGN KEY (event_id) REFERENCES Event(event_id),
     FOREIGN KEY (artist_id) REFERENCES Artist(artist_id)
->>>>>>> 5c40fba31adc24920dbf93425ab679722eac1847
 );
 
 -- Create table for artist genres (many-to-many relationship)
@@ -184,15 +148,9 @@ CREATE TABLE Ticket
     price DECIMAL(10,2) NOT NULL,
     payment_method VARCHAR(50) CHECK (payment_method IN ('credit card','debit card','bank transfer','not cash')),
     ean BIGINT NOT NULL UNIQUE,
-<<<<<<< HEAD
-    category VARCHAR(50) CHECK (category IN ('General','VIP','Backstage')),
-    used BOOLEAN DEFAULT FALSE,
-    resale_status BOOLEAN,
-=======
     ticket_category VARCHAR(50),
     used BIT DEFAULT 0,
     -- Use BIT (0 for FALSE, 1 for TRUE)
->>>>>>> 5c40fba31adc24920dbf93425ab679722eac1847
     CONSTRAINT unique_ticket_per_visitor_event UNIQUE (event_id, visitor_id),
     FOREIGN KEY (event_id) REFERENCES Event(event_id),
     FOREIGN KEY (visitor_id) REFERENCES Visitor(visitor_id),
@@ -234,10 +192,7 @@ CREATE TABLE Rating
     stage_presence_score INT CHECK (stage_presence_score BETWEEN 1 AND 5),
     organization_score INT CHECK (organization_score BETWEEN 1 AND 5),
     overall_score INT CHECK (overall_score BETWEEN 1 AND 5),
-<<<<<<< HEAD
-=======
     rating_date DATETIME DEFAULT GETDATE(),
->>>>>>> 5c40fba31adc24920dbf93425ab679722eac1847
     FOREIGN KEY (ticket_id) REFERENCES Ticket(ticket_id),
     FOREIGN KEY (performance_id) REFERENCES Performance(performance_id)
 );
