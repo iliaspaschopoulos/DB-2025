@@ -9,7 +9,7 @@
 ### Authentication
 #### SQL Login (**Do not use, it's super user**)
 - **Username**: `db2025ntua`  
-- **Password**: `Password123!`
+- **Password**: `xxxxxxxxxx`
 
 #### Liakos
 - **Username**: `deandodger`  
