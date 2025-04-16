@@ -1,17 +1,3 @@
-# DB-2025 Project - Implementation and Assessment
-
-## Database Connection Details
-
-### Server Name
-`db2025ntua.database.windows.net`
-
-### Database Name
-`db2025omadafotia`
-
-### Authentication
-#### SQL Login (**Do not use, it's super user**)
-# DB-2025 Project - Implementation and Assessment
-
 ## Database Connection Details
 
 ### Server Name
