@@ -22,9 +22,7 @@ CREATE TABLE Location
     longitude DECIMAL(9,6) NOT NULL,
     city VARCHAR(100) NOT NULL,
     country VARCHAR(100) NOT NULL,
-    continent VARCHAR(50) NOT NULL,
-    image_url VARCHAR(255),
-    description TEXT
+    continent VARCHAR(50) NOT NULL
 );
 
 -- Create Festivals table
@@ -34,8 +32,6 @@ CREATE TABLE Festival
     year INT NOT NULL CHECK (year >= 1900),
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    poster_image VARCHAR(255),
-    description TEXT,
     location_id INT NOT NULL,
     FOREIGN KEY (location_id) REFERENCES Location(location_id)
 );
@@ -47,10 +43,7 @@ CREATE TABLE Scene
     name VARCHAR(100) NOT NULL,
     description TEXT,
     max_capacity INT NOT NULL CHECK (max_capacity > 0),
-    technical_equipment TEXT,
-    location_id INT,
-    image_url VARCHAR(255),
-    FOREIGN KEY (location_id) REFERENCES Location(location_id)
+    equipment_info TEXT
 );
 
 -- Create Artists table
@@ -69,13 +62,10 @@ CREATE TABLE Event
 (
     event_id INT IDENTITY(1,1) PRIMARY KEY,
     festival_id INT NOT NULL,
-    stage_id INT NOT NULL,
+    scene_id INT NOT NULL,
     event_date DATE NOT NULL,
-    event_time TIME,
-    image_url VARCHAR(255),
-    description TEXT,
     FOREIGN KEY (festival_id) REFERENCES Festival(festival_id),
-    FOREIGN KEY (stage_id) REFERENCES Stage(stage_id)
+    FOREIGN KEY (scene_id) REFERENCES Scene(scene_id)
 );
 
 -- Fix for Performance table
@@ -83,8 +73,7 @@ CREATE TABLE Performance
 (
     performance_id INT IDENTITY(1,1) PRIMARY KEY,
     event_id INT NOT NULL,
-    artist_id INT,
-    band_id INT,
+    artist_id INT NOT NULL,
     performance_type VARCHAR(50) CHECK (performance_type IN ('warm up','headline','Special guest')),
     start_time TIME NOT NULL,
     duration TIME NOT NULL CHECK (DATEDIFF(MINUTE, '00:00:00', duration) <= 180),
@@ -110,11 +99,8 @@ CREATE TABLE Band
 (
     band_id INT IDENTITY(1,1) PRIMARY KEY,
     band_name VARCHAR(100) NOT NULL,
-    type VARCHAR(50),
     formation_date DATE,
-    website VARCHAR(255),
-    image_url VARCHAR(255),
-    description TEXT
+    website VARCHAR(255)
 );
 
 
@@ -142,10 +128,9 @@ CREATE TABLE Ticket
 (
     ticket_id INT IDENTITY(1,1) PRIMARY KEY,
     event_id INT NOT NULL,
-    stage_id INT NOT NULL,
     visitor_id INT NOT NULL,
     purchase_date DATE NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
+    cost DECIMAL(10,2) NOT NULL,
     payment_method VARCHAR(50) CHECK (payment_method IN ('credit card','debit card','bank transfer','not cash')),
     ean BIGINT NOT NULL UNIQUE,
     ticket_category VARCHAR(50),
@@ -153,8 +138,7 @@ CREATE TABLE Ticket
     -- Use BIT (0 for FALSE, 1 for TRUE)
     CONSTRAINT unique_ticket_per_visitor_event UNIQUE (event_id, visitor_id),
     FOREIGN KEY (event_id) REFERENCES Event(event_id),
-    FOREIGN KEY (visitor_id) REFERENCES Visitor(visitor_id),
-    FOREIGN KEY (stage_id) REFERENCES Stage(stage_id)
+    FOREIGN KEY (visitor_id) REFERENCES Visitor(visitor_id)
 );
 
 -- Create Staff table
@@ -164,20 +148,19 @@ CREATE TABLE Staff
     name VARCHAR(100) NOT NULL,
     age INT CHECK(age > 0),
     role VARCHAR(50) NOT NULL,
-    experience_level VARCHAR(20) CHECK (experience_level IN ('εικικευόμενος', 'αρχάριος', 'μέσος', 'έμπειρος', 'πολύ έμπειρος')),
-    image_url VARCHAR(255)
+    experience_level VARCHAR(20) CHECK (experience_level IN ('εικικευόμενος', 'αρχάριος', 'μέσος', 'έμπειρος', 'πολύ έμπειρος'))
 );
 
 -- Create Event_Staff table
 CREATE TABLE Event_Staff
 (
     event_id INT NOT NULL,
-    stage_id INT NOT NULL,
+    scene_id INT NOT NULL,
     staff_id INT NOT NULL,
     staff_category VARCHAR(50) CHECK (staff_category IN ('technical', 'security', 'auxiliary')),
-    PRIMARY KEY (event_id, stage_id, staff_id, staff_category),
+    PRIMARY KEY (event_id, scene_id, staff_id, staff_category),
     FOREIGN KEY (event_id) REFERENCES Event(event_id),
-    FOREIGN KEY (stage_id) REFERENCES Stage(stage_id),
+    FOREIGN KEY (scene_id) REFERENCES Scene(scene_id),
     FOREIGN KEY (staff_id) REFERENCES Staff(staff_id)
 );
 
@@ -197,44 +180,29 @@ CREATE TABLE Rating
     FOREIGN KEY (performance_id) REFERENCES Performance(performance_id)
 );
 
--- Create Review table
-CREATE TABLE Review (
-    review_id SERIAL PRIMARY KEY,
-    visitor_id INT NOT NULL,
-    performance_id INT NOT NULL,
-    interpretation_rating INT CHECK (interpretation_rating BETWEEN 1 AND 5),
-    sound_lighting_rating INT CHECK (sound_lighting_rating BETWEEN 1 AND 5),
-    stage_presence_rating INT CHECK (stage_presence_rating BETWEEN 1 AND 5),
-    organization_rating INT CHECK (organization_rating BETWEEN 1 AND 5),
-    overall_impression_rating INT CHECK (overall_impression_rating BETWEEN 1 AND 5),
-    review_date DATE NOT NULL,
-    FOREIGN KEY (visitor_id) REFERENCES Visitor(visitor_id),
-    FOREIGN KEY (performance_id) REFERENCES Performance(performance_id)
-);
-
 -- Create Website table
 CREATE TABLE Website (
-    website_id SERIAL PRIMARY KEY,
+    website_id INT IDENTITY(1,1) PRIMARY KEY,
     url VARCHAR(255) NOT NULL,
     festival_id INT,
     image_url VARCHAR(255),
-    description TEXT,
+    description NVARCHAR(MAX),
     FOREIGN KEY (festival_id) REFERENCES Festival(festival_id)
 );
 
 -- Create Resale_Queue table
 CREATE TABLE Resale_Queue (
-    ticket_id INT NOT NULL,
+    ticket_id INT NOT NULL PRIMARY KEY,
     seller_id INT NOT NULL,
     buyer_id INT NOT NULL,
     listing_date DATE NOT NULL,
-    resale_status VARCHAR(20) CHECK (resale_status IN ('Pending','Completed')),
+    resale_status VARCHAR(20) CHECK (resale_status IN ('Pending', 'Completed')),
     fifo_order INT,
-    PRIMARY KEY (ticket_id),
     FOREIGN KEY (ticket_id) REFERENCES Ticket(ticket_id),
     FOREIGN KEY (seller_id) REFERENCES Visitor(visitor_id),
     FOREIGN KEY (buyer_id) REFERENCES Visitor(visitor_id)
 );
+
 
 -- Indexes (sample)
 CREATE INDEX idx_festival_year ON Festival(year);
