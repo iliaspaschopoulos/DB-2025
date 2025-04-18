@@ -23,7 +23,6 @@ VALUES(2020, '2020-06-10', '2020-06-13', 1),
     (2025, '2025-07-10', '2025-07-13', 9),-- Future
     (2026, '2026-06-12', '2026-06-15', 10);-- Future
 
-
 INSERT INTO Scene
 VALUES('Underground Stage', 'Alternative scene for indie artists.', 2500, 'Speakers, Microphones, Basic Lights'),
     ('VIP Lounge Stage', 'For VIP guest performances.', 800, 'Premium Lights, Wireless Mics, Special FX'),
@@ -120,8 +119,7 @@ VALUES
 INSERT INTO Band_Member
     (band_id, artist_id)
 VALUES
-    (1, 1),
-    -- John Smith in The Sound Surfers
+    (1, 1),-- John Smith in The Sound Surfers
     (2, 4),
     (3, 5),
     (4, 8),
