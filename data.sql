@@ -64,12 +64,13 @@ VALUES('John Smith', 'DJ Smitty', '1990-04-15', 'http://djsmitty.com', '@djsmitt
     ('Emma Johnson', 'Emmy J', '1995-07-20', 'http://emmyj.com', '@emmyj'),
     ('Liam Brown', NULL, '1993-12-30', NULL, '@liambrown'),
     ('Aisha Khan', 'DJ Aisha', '1987-05-25', 'http://djaisha.com', '@djaisha'),
-    ('Tomoko Tanaka', NULL, '1991-08-18', NULL, '@tomokotanaka'),
     ('Lucas Silva', 'DJ L-Silva', '1989-02-14', NULL, '@djlucassilva'),
+    ('Tomoko Tanaka', NULL, '1991-08-18', NULL, '@tomokotanaka'),
     ('Nina Petrova', NULL, '1994-10-10', NULL, '@ninapetrova'),
     ('Omar Hassan', 'O-Hass', '1986-06-30', NULL, '@omarhassan'),
     ('Zara Ali', NULL, '1992-03-03', NULL, '@zaraali'),
     ('Ethan Chen', 'DJ Ethan C.', '1990-12-12', NULL, '@djethanchen'),
+    ('Isabella Rossi', NULL, '1984-07-07', NULL, '@isabellarossi'),
     ('Fatima El-Sayed', NULL, '1988-04-20', NULL, '@fatimaelsayed'),
     ('Raj Patel', 'DJ Raj P.', '1995-11-11', NULL, '@djrajpatel'),
     ('Clara Schmidt', NULL, '1991-07-07', NULL, '@claraschmidt'),
@@ -94,7 +95,6 @@ VALUES
     (1, 1, 'warm up', '18:00:00', '01:00:00', '00:10:00'),
     (1, 2, 'headline', '19:10:00', '02:00:00', '00:15:00'),
     (1, 3, 'Special guest', '21:25:00', '01:30:00', '00:05:00');
-
 
 
 INSERT INTO Artist_Genre
