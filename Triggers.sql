@@ -9,10 +9,10 @@ BEGIN
     WHERE event_id = (SELECT event_id
         FROM inserted) AND ticket_category = 'VIP')
         >
-        ((SELECT S.max_capacity
-    FROM Event E
-        JOIN Scene S ON E.scene_id = S.scene_id
-    WHERE E.event_id = (SELECT event_id
+        ((SELECT Scene.max_capacity
+    FROM Event
+        JOIN Scene ON Event.scene_id = Scene.scene_id
+    WHERE Event.event_id = (SELECT event_id
     FROM inserted)) * 0.1)
     )
     BEGIN
