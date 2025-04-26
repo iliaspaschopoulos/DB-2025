@@ -77,21 +77,21 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+    -- Check if any artist exceeds 3 consecutive years
     IF EXISTS (
         SELECT 1
     FROM INSERTED
-    WHERE consecutive_years_appearing > 2
+    WHERE consecutive_years_appearing >= 3
     )
     BEGIN
-    THROW 50001, N'Ο καλλιτέχνης δεν μπορεί να συμμετέχει για πάνω από 3 συνεχόμενα έτη.', 1;
-    RETURN;
-END
+        RAISERROR ('NΟ καλλιτέχνης δεν μπορεί να συμμετέχει για πάνω από 3 συνεχόμενα έτη.', 16, 1);
+        RETURN;
+    END;
 
-    -- Αν όλα καλά, τότε κάνουμε insert αλλά με αλλαγμένο consecutive_years_appearing
+    -- If all is good, insert the rows with incremented consecutive_years_appearing
     INSERT INTO Artist
-    (consecutive_years_appearing)
-SELECT
-    consecutive_years_appearing + 1, 
--- Αυξάνουμε
-FROM INSERTED;
+        (artist_id, name, stage_name, date_of_birth, website, instagram_profile, consecutive_years_appearing)
+    SELECT
+        artist_id, name, stage_name, date_of_birth, website, instagram_profile, consecutive_years_appearing + 1
+    FROM INSERTED;
 END;
