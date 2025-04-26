@@ -70,3 +70,28 @@ END;
 --------------------------------------------------------------
 GO------------------------------------------------------------
 --------------------------------------------------------------
+CREATE TRIGGER check_consecutive_years
+ON Artist
+INSTEAD OF INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1
+    FROM INSERTED
+    WHERE consecutive_years_appearing > 2
+    )
+    BEGIN
+    THROW 50001, N'Ο καλλιτέχνης δεν μπορεί να συμμετέχει για πάνω από 3 συνεχόμενα έτη.', 1;
+    RETURN;
+END
+
+    -- Αν όλα καλά, τότε κάνουμε insert αλλά με αλλαγμένο consecutive_years_appearing
+    INSERT INTO Artist
+    (consecutive_years_appearing)
+SELECT
+    consecutive_years_appearing + 1, 
+-- Αυξάνουμε
+FROM INSERTED;
+END;
