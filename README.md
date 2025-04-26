@@ -1,49 +1,24 @@
-## Database Connection Details
+# **DB-2025 Connection Guide**
 
-### Server Name
-`db2025ntua.database.windows.net`
+## **1. Database Connection Details**
+### **Server Name**
+`dbntua2025v2.database.windows.net`
 
-### Database Name
-`db2025omadafotia`
+### **Database Name**
+`DbNtua2025v2`
 
-### Authentication
-#### SQL Login (**Do not use, it's super user**)
-- **Username**: `db2025ntua`  
+### **Authentication Details**
+#### **Superuser (DO NOT use for students)**
+- **Username**: `db2025ntua`
 - **Password**: `TH7knXjZzL4-AV3`
 
-#### Liakos
-- **Username**: `deandodger`  
-- **Password**: `Password123!`
-
-#### Jason
-- **Username**: `perantzakas`
-- **Password**: `Password123!`
-
-
-## For Mac users, check_user.sh file creates user
-### Usage:
-
-1.  **Set the superuser password:**
-    * Before running the script, set the `SQL_PASSWORD` environment variable with your superuser's password:
-
-        ```bash
-        export SQL_PASSWORD="your_superuser_password"
-        ```
-
-        * Replace `"your_superuser_password"` with the actual password of the superuser account that has permissions to create other logins and users.
-
-2.  **Run the script:**
-    * Execute the script, providing the desired username and password for the new user:
-
-        ```bash
-        ./check_user.sh <username> <password>
-        ```
-
-        * Replace `<username>` with the desired username.
-        * Replace `<password>` with the desired password.
-
-## Connection string (SQL Server in VS Code)
-Server=db2025ntua.database.windows.net;Database=db2025omadafotia;User ID={your username here};Password=P{your password here};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
+#### **Student Accounts**
+- **Liakos**
+  - **Username**: `deandodger`
+  - **Password**: `Password123!`
+- **Jason**
+  - **Username**: `perantzakas`
+  - **Password**: `Password123!`
 
 
 
