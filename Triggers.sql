@@ -1,3 +1,21 @@
+-- Drop triggers if they exist before creating them
+IF OBJECT_ID('[dbo].[VIP]', 'TR') IS NOT NULL
+    DROP TRIGGER [dbo].[VIP];
+GO
+
+-- Drop Staff trigger using both schema-qualified and non-schema-qualified names to ensure removal
+IF OBJECT_ID('[dbo].[Staff]', 'TR') IS NOT NULL
+    DROP TRIGGER [dbo].[Staff];
+GO
+
+IF OBJECT_ID('Staff', 'TR') IS NOT NULL
+    DROP TRIGGER Staff;
+GO
+
+IF OBJECT_ID('[dbo].[check_consecutive_years]', 'TR') IS NOT NULL
+    DROP TRIGGER [dbo].[check_consecutive_years];
+GO
+
 -- VIP Trigger: Enforce VIP ticket limit per event/scene -- Q6
 CREATE TRIGGER VIP
 ON Ticket
@@ -26,7 +44,7 @@ END;
 GO------------------------------------------------------------
 --------------------------------------------------------------
 -- Staff Trigger: Enforce staff ratios per event/scene -- Q7
-CREATE TRIGGER Staff
+CREATE TRIGGER StaffTrigger
 ON Event_Staff
 AFTER INSERT, UPDATE
 AS
