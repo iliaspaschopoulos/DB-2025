@@ -1,4 +1,4 @@
--- Query 1: Find revenue of the festival, per year from ticket sales, broken down by payment method.
+-- Q9: Βρείτε τα έσοδα του φεστιβάλ, ανά έτος από την πώληση εισιτηρίων, λαμβάνοντας υπόψη όλες τις κατηγορίες εισιτηρίων και παρέχοντας ανάλυση ανά είδος πληρωμής.
 SELECT f.year,
     t.payment_method,
     SUM(t.cost) AS total_revenue
