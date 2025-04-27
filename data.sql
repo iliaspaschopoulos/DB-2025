@@ -56,26 +56,27 @@ VALUES('Underground Stage', 'Alternative scene for indie artists.', 2500, 'Speak
 
 
 INSERT INTO Artist
-VALUES('John Smith', 'DJ Smitty', '1990-04-15', 'http://djsmitty.com', '@djsmitty'),
-    ('Maria Garcia', NULL, '1985-09-12', NULL, '@mariag'),
-    ('Lee Minho', 'Min', '1992-11-22', 'http://minbeats.kr', '@minbeats'),
-    ('Sophie Dubois', NULL, '1980-01-05', 'http://sophiedubois.fr', NULL),
-    ('Carlos Ruiz', 'CR-Beats', '1988-03-10', NULL, '@crbeats'),
-    ('Emma Johnson', 'Emmy J', '1995-07-20', 'http://emmyj.com', '@emmyj'),
-    ('Liam Brown', NULL, '1993-12-30', NULL, '@liambrown'),
-    ('Aisha Khan', 'DJ Aisha', '1987-05-25', 'http://djaisha.com', '@djaisha'),
-    ('Lucas Silva', 'DJ L-Silva', '1989-02-14', NULL, '@djlucassilva'),
-    ('Tomoko Tanaka', NULL, '1991-08-18', NULL, '@tomokotanaka'),
-    ('Nina Petrova', NULL, '1994-10-10', NULL, '@ninapetrova'),
-    ('Omar Hassan', 'O-Hass', '1986-06-30', NULL, '@omarhassan'),
-    ('Zara Ali', NULL, '1992-03-03', NULL, '@zaraali'),
-    ('Isabella Rossi', NULL, '1984-07-07', NULL, '@isabellarossi'),
-    ('Fatima El-Sayed', NULL, '1988-04-20', NULL, '@fatimaelsayed'),
-    ('Raj Patel', 'DJ Raj P.', '1995-11-11', NULL, '@djrajpatel'),
-    ('Clara Schmidt', NULL, '1991-07-07', NULL, '@claraschmidt'),
-    ('David Kim', 'D-Kim', '1987-09-09', NULL, '@davidkim'),
-    ('Sofia Rossi', NULL, '1993-01-01', NULL, '@sofiarossi'),
-    ('Mateo Gonzalez', 'DJ M-Gonza', '1989-05-15', NULL, '@mateogonzalez');
+    (name, stage_name, date_of_birth, website, instagram_profile, consecutive_years_appearing)
+VALUES('John Smith', 'DJ Smitty', '1990-04-15', 'http://djsmitty.com', '@djsmitty', 0),
+    ('Maria Garcia', NULL, '1985-09-12', NULL, '@mariag', 0),
+    ('Lee Minho', 'Min', '1992-11-22', 'http://minbeats.kr', '@minbeats', 0),
+    ('Sophie Dubois', NULL, '1980-01-05', 'http://sophiedubois.fr', NULL, 0),
+    ('Carlos Ruiz', 'CR-Beats', '1988-03-10', NULL, '@crbeats', 0),
+    ('Emma Johnson', 'Emmy J', '1995-07-20', 'http://emmyj.com', '@emmyj', 0),
+    ('Liam Brown', NULL, '1993-12-30', NULL, '@liambrown', 0),
+    ('Aisha Khan', 'DJ Aisha', '1987-05-25', 'http://djaisha.com', '@djaisha', 0),
+    ('Lucas Silva', 'DJ L-Silva', '1989-02-14', NULL, '@djlucassilva', 0),
+    ('Tomoko Tanaka', NULL, '1991-08-18', NULL, '@tomokotanaka', 0),
+    ('Nina Petrova', NULL, '1994-10-10', NULL, '@ninapetrova', 0),
+    ('Omar Hassan', 'O-Hass', '1986-06-30', NULL, '@omarhassan', 0),
+    ('Zara Ali', NULL, '1992-03-03', NULL, '@zaraali', 0),
+    ('Isabella Rossi', NULL, '1984-07-07', NULL, '@isabellarossi', 0),
+    ('Fatima El-Sayed', NULL, '1988-04-20', NULL, '@fatimaelsayed', 0),
+    ('Raj Patel', 'DJ Raj P.', '1995-11-11', NULL, '@djrajpatel', 0),
+    ('Clara Schmidt', NULL, '1991-07-07', NULL, '@claraschmidt', 0),
+    ('David Kim', 'D-Kim', '1987-09-09', NULL, '@davidkim', 0),
+    ('Sofia Rossi', NULL, '1993-01-01', NULL, '@sofiarossi', 0),
+    ('Mateo Gonzalez', 'DJ M-Gonza', '1989-05-15', NULL, '@mateogonzalez', 0);
 
 
 INSERT INTO Event
@@ -123,5 +124,5 @@ VALUES
     (3, 5),
     (4, 8),
     (5, 14),
-    (5, 20); 
+    (5, 20);
 
