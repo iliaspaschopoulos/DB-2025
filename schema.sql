@@ -203,7 +203,28 @@ CREATE TABLE Resale_Queue (
     FOREIGN KEY (buyer_id) REFERENCES Visitor(visitor_id)
 );
 
+-- Indexes for performance and query optimization -- Q2.2
 
--- Indexes (sample)
+-- Speeds up filtering and joining by festival year (used in revenue and grouping queries)
 CREATE INDEX idx_festival_year ON Festival(year);
+
+-- Speeds up filtering and sorting by ticket purchase date (useful for sales analysis)
 CREATE INDEX idx_ticket_purchase_date ON Ticket(purchase_date);
+
+-- Speeds up joins and lookups for tickets by event
+CREATE INDEX idx_ticket_event_id ON Ticket(event_id);
+
+-- Speeds up joins and lookups for tickets by visitor
+CREATE INDEX idx_ticket_visitor_id ON Ticket(visitor_id);
+
+-- Speeds up queries for performances by artist
+CREATE INDEX idx_performance_artist_id ON Performance(artist_id);
+
+-- Speeds up queries for performances by event
+CREATE INDEX idx_performance_event_id ON Performance(event_id);
+
+-- Speeds up queries for staff assignments by event and scene
+CREATE INDEX idx_event_staff_event_scene ON Event_Staff(event_id, scene_id);
+
+-- Speeds up queries for artist genres (e.g., finding all artists of a genre)
+CREATE INDEX idx_artist_genre_genre ON Artist_Genre(genre);
