@@ -56,27 +56,27 @@ VALUES('Underground Stage', 'Alternative scene for indie artists.', 2500, 'Speak
 
 
 INSERT INTO Artist
-    (name, stage_name, date_of_birth, website, instagram_profile, consecutive_years_appearing)
-VALUES('John Smith', 'DJ Smitty', '1990-04-15', 'http://djsmitty.com', '@djsmitty', 0),
-    ('Maria Garcia', NULL, '1985-09-12', NULL, '@mariag', 0),
-    ('Lee Minho', 'Min', '1992-11-22', 'http://minbeats.kr', '@minbeats', 0),
-    ('Sophie Dubois', NULL, '1980-01-05', 'http://sophiedubois.fr', NULL, 0),
-    ('Carlos Ruiz', 'CR-Beats', '1988-03-10', NULL, '@crbeats', 0),
-    ('Emma Johnson', 'Emmy J', '1995-07-20', 'http://emmyj.com', '@emmyj', 0),
-    ('Liam Brown', NULL, '1993-12-30', NULL, '@liambrown', 0),
-    ('Aisha Khan', 'DJ Aisha', '1987-05-25', 'http://djaisha.com', '@djaisha', 0),
-    ('Lucas Silva', 'DJ L-Silva', '1989-02-14', NULL, '@djlucassilva', 0),
-    ('Tomoko Tanaka', NULL, '1991-08-18', NULL, '@tomokotanaka', 0),
-    ('Nina Petrova', NULL, '1994-10-10', NULL, '@ninapetrova', 0),
-    ('Omar Hassan', 'O-Hass', '1986-06-30', NULL, '@omarhassan', 0),
-    ('Zara Ali', NULL, '1992-03-03', NULL, '@zaraali', 0),
-    ('Isabella Rossi', NULL, '1984-07-07', NULL, '@isabellarossi', 0),
-    ('Fatima El-Sayed', NULL, '1988-04-20', NULL, '@fatimaelsayed', 0),
-    ('Raj Patel', 'DJ Raj P.', '1995-11-11', NULL, '@djrajpatel', 0),
-    ('Clara Schmidt', NULL, '1991-07-07', NULL, '@claraschmidt', 0),
-    ('David Kim', 'D-Kim', '1987-09-09', NULL, '@davidkim', 0),
-    ('Sofia Rossi', NULL, '1993-01-01', NULL, '@sofiarossi', 0),
-    ('Mateo Gonzalez', 'DJ M-Gonza', '1989-05-15', NULL, '@mateogonzalez', 0);
+    (name, stage_name, date_of_birth, website, instagram_profile)
+VALUES('John Smith', 'DJ Smitty', '1990-04-15', 'http://djsmitty.com', '@djsmitty'),
+    ('Maria Garcia', NULL, '1985-09-12', NULL, '@mariag'),
+    ('Lee Minho', 'Min', '1992-11-22', 'http://minbeats.kr', '@minbeats'),
+    ('Sophie Dubois', NULL, '1980-01-05', 'http://sophiedubois.fr', NULL),
+    ('Carlos Ruiz', 'CR-Beats', '1988-03-10', NULL, '@crbeats'),
+    ('Emma Johnson', 'Emmy J', '1995-07-20', 'http://emmyj.com', '@emmyj'),
+    ('Liam Brown', NULL, '1993-12-30', NULL, '@liambrown'),
+    ('Aisha Khan', 'DJ Aisha', '1987-05-25', 'http://djaisha.com', '@djaisha'),
+    ('Lucas Silva', 'DJ L-Silva', '1989-02-14', NULL, '@djlucassilva'),
+    ('Tomoko Tanaka', NULL, '1991-08-18', NULL, '@tomokotanaka'),
+    ('Nina Petrova', NULL, '1994-10-10', NULL, '@ninapetrova'),
+    ('Omar Hassan', 'O-Hass', '1986-06-30', NULL, '@omarhassan'),
+    ('Zara Ali', NULL, '1992-03-03', NULL, '@zaraali'),
+    ('Isabella Rossi', NULL, '1984-07-07', NULL, '@isabellarossi'),
+    ('Fatima El-Sayed', NULL, '1988-04-20', NULL, '@fatimaelsayed'),
+    ('Raj Patel', 'DJ Raj P.', '1995-11-11', NULL, '@djrajpatel'),
+    ('Clara Schmidt', NULL, '1991-07-07', NULL, '@claraschmidt'),
+    ('David Kim', 'D-Kim', '1987-09-09', NULL, '@davidkim'),
+    ('Sofia Rossi', NULL, '1993-01-01', NULL, '@sofiarossi'),
+    ('Mateo Gonzalez', 'DJ M-Gonza', '1989-05-15', NULL, '@mateogonzalez');
 
 
 INSERT INTO Event
@@ -86,6 +86,25 @@ VALUES(1, 5, '2020-06-10'),
     (3, 4, '2022-08-06'),
     (4, 3, '2023-06-21'),
     (5, 2, '2024-07-02');
+
+-- Test: Insert John Smith (artist_id=1) for 3 consecutive years (should succeed)
+INSERT INTO Event (festival_id, scene_id, event_date) VALUES (6, 5, '2019-05-10'); -- 2019
+INSERT INTO Performance (event_id, artist_id, performance_type, start_time, duration, break_duration)
+VALUES (6, 1, 'headline', '20:00:00', '01:00:00', '00:10:00');
+
+INSERT INTO Event (festival_id, scene_id, event_date) VALUES (1, 5, '2020-06-10'); -- 2020
+INSERT INTO Performance (event_id, artist_id, performance_type, start_time, duration, break_duration)
+VALUES (7, 1, 'headline', '20:00:00', '01:00:00', '00:10:00');
+
+INSERT INTO Event (festival_id, scene_id, event_date) VALUES (2, 5, '2021-07-15'); -- 2021
+INSERT INTO Performance (event_id, artist_id, performance_type, start_time, duration, break_duration)
+VALUES (8, 1, 'headline', '20:00:00', '01:00:00', '00:10:00');
+
+-- Test: Insert John Smith for a 4th consecutive year (should fail)
+INSERT INTO Event (festival_id, scene_id, event_date) VALUES (3, 5, '2022-08-05'); -- 2022
+INSERT INTO Performance (event_id, artist_id, performance_type, start_time, duration, break_duration)
+VALUES (9, 1, 'headline', '20:00:00', '01:00:00', '00:10:00');
+-- This last insert should be blocked by the trigger
 
 
 -- For simplicity, one event and many performances
@@ -125,4 +144,32 @@ VALUES
     (4, 8),
     (5, 14),
     (5, 20);
+
+-- Insert random Visitors (if not already present)
+INSERT INTO Visitor (first_name, last_name, contact, age)
+VALUES
+('Alice', 'Johnson', 'alice@example.com', 28),
+('Bob', 'Smith', 'bob@example.com', 34),
+('Charlie', 'Brown', 'charlie@example.com', 22),
+('Diana', 'Prince', 'diana@example.com', 30),
+('Ethan', 'Hunt', 'ethan@example.com', 40);
+
+-- Insert random Tickets (if not already present)
+INSERT INTO Ticket (event_id, visitor_id, purchase_date, cost, payment_method, ean, ticket_category)
+VALUES
+(1, 1, '2020-06-01', 50.00, 'credit card', 1000000000001, 'VIP'),
+(1, 2, '2020-06-02', 40.00, 'debit card', 1000000000002, 'Standard'),
+(1, 3, '2020-06-03', 35.00, 'bank transfer', 1000000000003, 'Standard'),
+(1, 4, '2020-06-04', 60.00, 'credit card', 1000000000004, 'VIP'),
+(1, 5, '2020-06-05', 30.00, 'debit card', 1000000000005, 'Standard');
+
+-- Insert random Ratings
+INSERT INTO Rating
+    (ticket_id, performance_id, visitor_id, interpretation_score, sound_lighting_score, stage_presence_score, organization_score, overall_score, rating_date)
+VALUES
+(1, 1, 1, 5, 4, 5, 4, 5, GETDATE()),
+(2, 2, 2, 4, 5, 4, 5, 4, GETDATE()),
+(3, 3, 3, 3, 4, 3, 4, 3, GETDATE()),
+(4, 1, 4, 5, 5, 5, 5, 5, GETDATE()),
+(5, 2, 5, 4, 3, 4, 3, 4, GETDATE());
 

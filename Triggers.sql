@@ -92,29 +92,91 @@ END;
 --------------------------------------------------------------
 GO------------------------------------------------------------
 --------------------------------------------------------------
--- Artist Trigger: Prevent >3 consecutive years -- Q8
-CREATE TRIGGER check_consecutive_years
-ON Artist
-INSTEAD OF INSERT
+-- Artist Performance Trigger: Prevent >3 consecutive years for an artist
+IF OBJECT_ID('[dbo].[check_consecutive_years_performance]', 'TR') IS NOT NULL
+    DROP TRIGGER [dbo].[check_consecutive_years_performance];
+GO
+
+CREATE TRIGGER check_consecutive_years_performance
+ON Performance
+AFTER INSERT
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Check if any artist exceeds 3 consecutive years
-    IF EXISTS (
-        SELECT 1
-        FROM INSERTED
-        WHERE consecutive_years_appearing >= 3
-    )
-    BEGIN
-        RAISERROR ('NΟ καλλιτέχνης δεν μπορεί να συμμετέχει για πάνω από 3 συνεχόμενα έτη.', 16, 1);
-        RETURN;
-    END;
+    DECLARE @artist_id INT;
+    DECLARE @prev_year INT;
+    DECLARE @curr_year INT;
+    DECLARE @streak INT;
 
-    -- Insert the rows as-is, do NOT insert artist_id (identity column)
-    INSERT INTO Artist
-        (name, stage_name, date_of_birth, website, instagram_profile, consecutive_years_appearing)
-    SELECT
-        name, stage_name, date_of_birth, website, instagram_profile, consecutive_years_appearing
-    FROM INSERTED;
+    -- Cursor for each artist in the inserted rows
+    DECLARE artist_cursor CURSOR FOR
+        SELECT DISTINCT i.artist_id
+        FROM inserted i;
+
+    OPEN artist_cursor;
+    FETCH NEXT FROM artist_cursor INTO @artist_id;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        -- Table variable to hold all years for this artist (including the new insert)
+        DECLARE @years TABLE (year INT PRIMARY KEY);
+
+        INSERT INTO @years(year)
+        SELECT DISTINCT f.year
+        FROM Performance p
+        JOIN Event e ON p.event_id = e.event_id
+        JOIN Festival f ON e.festival_id = f.festival_id
+        WHERE p.artist_id = @artist_id
+        UNION
+        SELECT DISTINCT f2.year
+        FROM inserted i2
+        JOIN Event e2 ON i2.event_id = e2.event_id
+        JOIN Festival f2 ON e2.festival_id = f2.festival_id
+        WHERE i2.artist_id = @artist_id;
+
+        -- Check for streaks
+        SET @streak = 1;
+        SET @prev_year = NULL;
+
+        DECLARE year_cursor CURSOR FOR
+            SELECT year FROM @years ORDER BY year;
+
+        OPEN year_cursor;
+        FETCH NEXT FROM year_cursor INTO @curr_year;
+
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            IF @prev_year IS NOT NULL
+            BEGIN
+                IF @curr_year = @prev_year + 1
+                    SET @streak = @streak + 1;
+                ELSE
+                    SET @streak = 1;
+            END
+
+            IF @streak > 3
+            BEGIN
+                CLOSE year_cursor;
+                DEALLOCATE year_cursor;
+                CLOSE artist_cursor;
+                DEALLOCATE artist_cursor;
+                ROLLBACK TRANSACTION;
+                RAISERROR ('No artist can perform for more than 3 consecutive years.', 16, 1);
+                RETURN;
+            END
+
+            SET @prev_year = @curr_year;
+            FETCH NEXT FROM year_cursor INTO @curr_year;
+        END
+
+        CLOSE year_cursor;
+        DEALLOCATE year_cursor;
+
+        FETCH NEXT FROM artist_cursor INTO @artist_id;
+    END
+
+    CLOSE artist_cursor;
+    DEALLOCATE artist_cursor;
 END;
+GO

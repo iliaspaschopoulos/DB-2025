@@ -1,4 +1,6 @@
 DROP TABLE IF EXISTS Rating;
+DROP TABLE IF EXISTS Resale_Queue;
+DROP TABLE IF EXISTS Website;
 DROP TABLE IF EXISTS Event_Staff;
 DROP TABLE IF EXISTS Staff;
 DROP TABLE IF EXISTS Ticket;
@@ -80,7 +82,7 @@ CREATE TABLE Performance
     -- Max 3 hours
     break_duration TIME CHECK (DATEDIFF(MINUTE, '00:05:00', break_duration) BETWEEN 0 AND 25),
     -- 5 to 30 minutes
-    FOREIGN KEY (event_id) REFERENCES Event(event_id),
+        FOREIGN KEY (event_id) REFERENCES Event(event_id),
     FOREIGN KEY (artist_id) REFERENCES Artist(artist_id)
 );
 
@@ -170,6 +172,7 @@ CREATE TABLE Rating
     rating_id INT IDENTITY(1,1) PRIMARY KEY,
     ticket_id INT NOT NULL,
     performance_id INT NOT NULL,
+    visitor_id INT NOT NULL, -- Connect likert rate with visitor
     interpretation_score INT CHECK (interpretation_score BETWEEN 1 AND 5),
     sound_lighting_score INT CHECK (sound_lighting_score BETWEEN 1 AND 5),
     stage_presence_score INT CHECK (stage_presence_score BETWEEN 1 AND 5),
@@ -177,7 +180,8 @@ CREATE TABLE Rating
     overall_score INT CHECK (overall_score BETWEEN 1 AND 5),
     rating_date DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (ticket_id) REFERENCES Ticket(ticket_id),
-    FOREIGN KEY (performance_id) REFERENCES Performance(performance_id)
+    FOREIGN KEY (performance_id) REFERENCES Performance(performance_id),
+    FOREIGN KEY (visitor_id) REFERENCES Visitor(visitor_id)
 );
 
 -- Create Website table
