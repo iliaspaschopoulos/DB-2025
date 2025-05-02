@@ -20,7 +20,7 @@ FROM artist_genre ag JOIN artist a
 ORDER BY 
     ag.genre, a.name;
 
---b3
+-- b3: Βρείτε ποιοι καλλιτέχνες έχουν εμφανιστεί ως warm up περισσότερες από 2 φορές στο ίδιο φεστιβάλ;
 SELECT
     Artist.name AS artist_name,
     Festival.year AS festival_year,
