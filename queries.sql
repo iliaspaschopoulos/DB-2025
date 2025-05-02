@@ -7,3 +7,15 @@ FROM Ticket t
     JOIN Festival f ON e.festival_id = f.festival_id
 GROUP BY f.year, t.payment_method
 ORDER BY f.year, t.payment_method;
+
+-- b2: Βρείτε όλους τους καλλιτέχνες που ανήκουν σε ένα συγκεκριμένο μουσικό είδος με ένδειξη αν συμμετείχαν σε εκδηλώσεις του φεστιβάλ για το συγκεκριμένο έτος ;
+SELECT 
+    ag.genre,
+    a.artist_id,
+    a.name
+FROM artist_genre ag JOIN artist a 
+
+ON ag.artist_id = a.artist_id
+
+ORDER BY 
+    ag.genre, a.name;
