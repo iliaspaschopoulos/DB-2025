@@ -149,7 +149,7 @@ CREATE TABLE Staff
     name VARCHAR(100) NOT NULL,
     age INT CHECK(age > 0),
     role VARCHAR(50) NOT NULL,
-    experience_level VARCHAR(20) CHECK (experience_level IN ('εικικευόμενος', 'αρχάριος', 'μέσος', 'έμπειρος', 'πολύ έμπειρος'))
+    experience_level VARCHAR(20) CHECK (experience_level IN ('ειδικευόμενος', 'αρχάριος', 'μέσος', 'έμπειρος', 'πολύ έμπειρος'))
 );
 
 -- Create Event_Staff table
