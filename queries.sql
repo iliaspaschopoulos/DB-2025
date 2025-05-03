@@ -84,5 +84,28 @@ GROUP BY
    a.artist_id, a.name;
 
 
+-- b7: Βρείτε ποιο φεστιβάλ είχε τον χαμηλότερο μέσο όρο εμπειρίας τεχνικού προσωπικού;
+SELECT
+	f.festival_id,
+    ROUND(AVG(
+        CASE s.experience_level
+            WHEN 'ειδικευόμενος' THEN 1
+            WHEN 'αρχάριος' THEN 2
+            WHEN 'μέσος' THEN 3
+            WHEN 'έμπειρος' THEN 4
+            WHEN 'πολύ έμπειρος' THEN 5
+        END
+    ), 2) AS avg_experience_score  
+	
+FROM Festival f
+JOIN Event e on f.festival_id = e.festival_id
+JOIN Event_Staff es on e.event_id = es.event_id
+JOIN Staff s ON es.staff_id = s.staff_id
+	
+GROUP BY f.festival_id
+ORDER BY avg_experience_score ASC
+LIMIT 1;
+
+
 
 
