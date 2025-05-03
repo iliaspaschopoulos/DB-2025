@@ -232,3 +232,6 @@ CREATE INDEX idx_event_staff_event_scene ON Event_Staff(event_id, scene_id);
 
 -- Speeds up queries for artist genres (e.g., finding all artists of a genre)
 CREATE INDEX idx_artist_genre_genre ON Artist_Genre(genre);
+
+-- GIA FORCE INDEX USE.
+CREATE INDEX idx_rating_performance_id ON Rating(performance_id);
