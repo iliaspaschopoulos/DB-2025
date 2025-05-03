@@ -172,3 +172,20 @@ VALUES
 (4, 1, 4, 5, 5, 5, 5, 5, GETDATE()),
 (5, 2, 5, 4, 3, 4, 3, 4, GETDATE());
 
+-- Insert random Staff
+INSERT INTO Staff (name, age, role, experience_level) VALUES
+('Giorgos Papadopoulos', 35, 'Ηχολήπτης', 'πολύ έμπειρος'),
+('Maria Kotsou', 29, 'Ηλεκτρολόγος', 'μέσος'),
+('Nikos Dellas', 42, 'Σκηνοθέτης', 'έμπειρος'),
+('Eleni Papadaki', 23, 'Φωτιστής', 'αρχάριος'),
+('Christos Mantas', 31, 'Τεχνικός Ήχου', 'μέσος'),
+('Anna Markou', 27, 'Βοηθός Σκηνής', 'ειδικευόμενος');
+
+-- Insert random Event Staff
+INSERT INTO Event_Staff (event_id, scene_id, staff_id, staff_category) VALUES
+(1, 1, 1, 'technical'),
+(1, 1, 2, 'technical'),
+(2, 2, 3, 'technical'),
+(2, 2, 4, 'auxiliary'),
+(3, 3, 5, 'technical'),
+(3, 3, 6, 'auxiliary');
