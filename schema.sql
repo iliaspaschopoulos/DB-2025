@@ -1,4 +1,6 @@
 DROP TABLE IF EXISTS Rating;
+DROP TABLE IF EXISTS Resale_Queue;
+DROP TABLE IF EXISTS Website;
 DROP TABLE IF EXISTS Event_Staff;
 DROP TABLE IF EXISTS Staff;
 DROP TABLE IF EXISTS Ticket;
@@ -54,8 +56,7 @@ CREATE TABLE Artist
     stage_name VARCHAR(100),
     date_of_birth DATE NOT NULL,
     website VARCHAR(255),
-    instagram_profile VARCHAR(255),
-    consecutive_years_appearing INT NOT NULL
+    instagram_profile VARCHAR(255)
 );
 
 -- Create Events table
@@ -171,6 +172,8 @@ CREATE TABLE Rating
     rating_id INT IDENTITY(1,1) PRIMARY KEY,
     ticket_id INT NOT NULL,
     performance_id INT NOT NULL,
+    visitor_id INT NOT NULL,
+    -- Connect likert rate with visitor
     interpretation_score INT CHECK (interpretation_score BETWEEN 1 AND 5),
     sound_lighting_score INT CHECK (sound_lighting_score BETWEEN 1 AND 5),
     stage_presence_score INT CHECK (stage_presence_score BETWEEN 1 AND 5),
@@ -178,7 +181,8 @@ CREATE TABLE Rating
     overall_score INT CHECK (overall_score BETWEEN 1 AND 5),
     rating_date DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (ticket_id) REFERENCES Ticket(ticket_id),
-    FOREIGN KEY (performance_id) REFERENCES Performance(performance_id)
+    FOREIGN KEY (performance_id) REFERENCES Performance(performance_id),
+    FOREIGN KEY (visitor_id) REFERENCES Visitor(visitor_id)
 );
 
 -- Create Website table
@@ -206,7 +210,31 @@ CREATE TABLE Resale_Queue
     FOREIGN KEY (buyer_id) REFERENCES Visitor(visitor_id)
 );
 
+-- Indexes for performance and query optimization -- Q2.2
 
--- Indexes (sample)
+-- Speeds up filtering and joining by festival year (used in revenue and grouping queries)
 CREATE INDEX idx_festival_year ON Festival(year);
+
+-- Speeds up filtering and sorting by ticket purchase date (useful for sales analysis)
 CREATE INDEX idx_ticket_purchase_date ON Ticket(purchase_date);
+
+-- Speeds up joins and lookups for tickets by event
+CREATE INDEX idx_ticket_event_id ON Ticket(event_id);
+
+-- Speeds up joins and lookups for tickets by visitor
+CREATE INDEX idx_ticket_visitor_id ON Ticket(visitor_id);
+
+-- Speeds up queries for performances by artist
+CREATE INDEX idx_performance_artist_id ON Performance(artist_id);
+
+-- Speeds up queries for performances by event
+CREATE INDEX idx_performance_event_id ON Performance(event_id);
+
+-- Speeds up queries for staff assignments by event and scene
+CREATE INDEX idx_event_staff_event_scene ON Event_Staff(event_id, scene_id);
+
+-- Speeds up queries for artist genres (e.g., finding all artists of a genre)
+CREATE INDEX idx_artist_genre_genre ON Artist_Genre(genre);
+
+-- GIA FORCE INDEX USE.
+CREATE INDEX idx_rating_performance_id ON Rating(performance_id);
