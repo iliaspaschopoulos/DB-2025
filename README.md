@@ -116,3 +116,21 @@
 ### Overall Assessment
 
 We believe that these changes bring the database design closer to full compliance with the assignment requirements and the professor’s clarifications. Most core specifications (normalized design, image attributes, and query modifications) are addressed.
+
+## ERD/Relational Diagram Relationship Symbols
+
+**Lucidchart Diagrams:**
+- [ER Diagram (edit link)](https://lucid.app/lucidchart/57fd9f8f-7159-4475-8242-13dee6cf33a6/edit?viewport_loc=-3257%2C232%2C4818%2C2641%2C0_0&invitationId=inv_e50e2cf1-da7a-4854-8eb9-4a1bab05ae1d)
+- [Relational Diagram (edit link)](https://lucid.app/lucidchart/9b7b5d05-00e3-4911-99d4-70bafd1a7f99/edit?viewport_loc=-2684%2C490%2C3298%2C1807%2C0_0&invitationId=inv_24cdfe50-dea8-45e7-95c8-f628a27367fb)
+
+| Relationship Type         | Symbol in Diagram      | Meaning                                 |
+|--------------------------|------------------------|-----------------------------------------|
+| One-to-many (1:N)        | Parent —&#124;< Child  | Single line at parent, crow’s foot at child (each parent can have many children, each child has one parent) |
+| Zero or many (0..N)      | Parent ○—< Child       | Circle at parent, crow’s foot at child (each parent can have zero or many children) |
+| One-to-one (1:1)         | TableA —&#124;— TableB | Single line at both ends (each row in TableA matches at most one in TableB and vice versa) |
+| Zero or one (0..1)       | TableA ○— TableB       | Circle at one end, single line at the other (each row in TableA matches zero or one in TableB) |
+
+**Legend:**
+- `—|` : Single line (mandatory/one)
+- `○` : Circle (optional/zero)
+- `<` : Crow’s foot (many)

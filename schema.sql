@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS Scene;
 DROP TABLE IF EXISTS Festival;
 DROP TABLE IF EXISTS Location;
 
--- Create Locations table
+-- 1. Core Location & Festival Structure
 CREATE TABLE Location
 (
     location_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -27,7 +27,6 @@ CREATE TABLE Location
     continent VARCHAR(50) NOT NULL
 );
 
--- Create Festivals table
 CREATE TABLE Festival
 (
     festival_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -38,7 +37,7 @@ CREATE TABLE Festival
     FOREIGN KEY (location_id) REFERENCES Location(location_id)
 );
 
--- Create Scenes table
+-- 2. Scenes & Events
 CREATE TABLE Scene
 (
     scene_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -48,7 +47,17 @@ CREATE TABLE Scene
     equipment_info TEXT
 );
 
--- Create Artists table
+CREATE TABLE Event
+(
+    event_id INT IDENTITY(1,1) PRIMARY KEY,
+    festival_id INT NOT NULL,
+    scene_id INT NOT NULL,
+    event_date DATE NOT NULL,
+    FOREIGN KEY (festival_id) REFERENCES Festival(festival_id),
+    FOREIGN KEY (scene_id) REFERENCES Scene(scene_id)
+);
+
+-- 3. Artists, Bands, Genres
 CREATE TABLE Artist
 (
     artist_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -60,44 +69,6 @@ CREATE TABLE Artist
     consecutive_years_appearing INT NOT NULL
 );
 
--- Create Events table
-CREATE TABLE Event
-(
-    event_id INT IDENTITY(1,1) PRIMARY KEY,
-    festival_id INT NOT NULL,
-    scene_id INT NOT NULL,
-    event_date DATE NOT NULL,
-    FOREIGN KEY (festival_id) REFERENCES Festival(festival_id),
-    FOREIGN KEY (scene_id) REFERENCES Scene(scene_id)
-);
-
--- Fix for Performance table
-CREATE TABLE Performance
-(
-    performance_id INT IDENTITY(1,1) PRIMARY KEY,
-    event_id INT NOT NULL,
-    artist_id INT NOT NULL,
-    performance_type VARCHAR(50) CHECK (performance_type IN ('warm up','headline','Special guest')),
-    start_time TIME NOT NULL,
-    duration TIME NOT NULL CHECK (DATEDIFF(MINUTE, '00:00:00', duration) <= 180),
-    -- Max 3 hours
-    break_duration TIME CHECK (DATEDIFF(MINUTE, '00:05:00', break_duration) BETWEEN 0 AND 25),
-    -- 5 to 30 minutes
-    FOREIGN KEY (event_id) REFERENCES Event(event_id),
-    FOREIGN KEY (artist_id) REFERENCES Artist(artist_id)
-);
-
--- Create table for artist genres (many-to-many relationship)
-CREATE TABLE Artist_Genre
-(
-    artist_id INT NOT NULL,
-    genre VARCHAR(50) NOT NULL,
-    subgenre VARCHAR(50),
-    PRIMARY KEY (artist_id, genre, subgenre),
-    FOREIGN KEY (artist_id) REFERENCES Artist(artist_id)
-);
-
--- Create table for Band membership (if artist is member of a band)
 CREATE TABLE Band
 (
     band_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -105,7 +76,6 @@ CREATE TABLE Band
     formation_date DATE,
     website VARCHAR(255)
 );
-
 
 CREATE TABLE Band_Member
 (
@@ -116,7 +86,37 @@ CREATE TABLE Band_Member
     FOREIGN KEY (artist_id) REFERENCES Artist(artist_id)
 );
 
--- Create Visitors table
+CREATE TABLE Artist_Genre
+(
+    artist_id INT NOT NULL,
+    genre VARCHAR(50) NOT NULL,
+    subgenre VARCHAR(50),
+    PRIMARY KEY (artist_id, genre, subgenre),
+    FOREIGN KEY (artist_id) REFERENCES Artist(artist_id)
+);
+
+-- 4. Performances
+CREATE TABLE Performance
+(
+    performance_id INT IDENTITY(1,1) PRIMARY KEY,
+    event_id INT NOT NULL,
+    artist_id INT NULL,
+    band_id INT NULL,
+    performance_type VARCHAR(50) CHECK (performance_type IN ('warm up','headline','Special guest')),
+    start_time TIME NOT NULL,
+    duration TIME NOT NULL CHECK (DATEDIFF(MINUTE, '00:00:00', duration) <= 180),
+    break_duration TIME CHECK (DATEDIFF(MINUTE, '00:05:00', break_duration) BETWEEN 0 AND 25),
+    FOREIGN KEY (event_id) REFERENCES Event(event_id),
+    FOREIGN KEY (artist_id) REFERENCES Artist(artist_id),
+    FOREIGN KEY (band_id) REFERENCES Band(band_id),
+    -- Ensure only one of artist_id or band_id is set
+    CONSTRAINT chk_performance_artist_or_band CHECK (
+        (artist_id IS NOT NULL AND band_id IS NULL)
+        OR (artist_id IS NULL AND band_id IS NOT NULL)
+    )
+);
+
+-- 5. Visitors & Tickets
 CREATE TABLE Visitor
 (
     visitor_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -126,7 +126,6 @@ CREATE TABLE Visitor
     age INT CHECK (age > 0)
 );
 
--- Ticket table
 CREATE TABLE Ticket
 (
     ticket_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -144,7 +143,7 @@ CREATE TABLE Ticket
     FOREIGN KEY (visitor_id) REFERENCES Visitor(visitor_id)
 );
 
--- Create Staff table
+-- 6. Staff & Event Staffing
 CREATE TABLE Staff
 (
     staff_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -154,7 +153,6 @@ CREATE TABLE Staff
     experience_level VARCHAR(20) CHECK (experience_level IN ('ειδικευόμενος', 'αρχάριος', 'μέσος', 'έμπειρος', 'πολύ έμπειρος'))
 );
 
--- Create Event_Staff table
 CREATE TABLE Event_Staff
 (
     event_id INT NOT NULL,
@@ -167,7 +165,7 @@ CREATE TABLE Event_Staff
     FOREIGN KEY (staff_id) REFERENCES Staff(staff_id)
 );
 
--- Create Ratings table
+-- 7. Ratings & Website
 CREATE TABLE Rating
 (
     rating_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -186,7 +184,6 @@ CREATE TABLE Rating
     FOREIGN KEY (visitor_id) REFERENCES Visitor(visitor_id)
 );
 
--- Create Website table
 CREATE TABLE Website
 (
     website_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -197,7 +194,7 @@ CREATE TABLE Website
     FOREIGN KEY (festival_id) REFERENCES Festival(festival_id)
 );
 
--- Create Resale_Queue table
+-- 8. Ticket Resale
 CREATE TABLE Resale_Queue
 (
     ticket_id INT NOT NULL PRIMARY KEY,
