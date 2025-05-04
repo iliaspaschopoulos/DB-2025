@@ -104,7 +104,8 @@ GROUP BY f.festival_id
 ORDER BY avg_experience_score ASC;
 
 
-----b11
+-- b11: Βρείτε όλους τους καλλιτέχνες που συμμετείχαν τουλάχιστον 5 λιγότερες φορές από τον καλλιτέχνη με τις
+περισσότερες συμμετοχές σε φεστιβάλ.
 WITH ArtistParticipation AS (
     SELECT 
         Artist.artist_id,
