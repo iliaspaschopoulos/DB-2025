@@ -44,9 +44,9 @@ INSERT INTO Scene (name, description, max_capacity, equipment_info) VALUES
 ('Indie Stage', 'For indie bands', 500, 'Basic sound');
 
 -- Artist
-INSERT INTO Artist (name, stage_name, date_of_birth, website, instagram_profile, consecutive_years_appearing) VALUES
-('John Doe', 'DJ John', '1990-05-15', 'http://johndoe.com', 'http://instagram.com/djjohn', 2),
-('Maria Smith', NULL, '1985-11-23', NULL, NULL, 1);
+INSERT INTO Artist (name, stage_name, date_of_birth, website, instagram_profile) VALUES
+('John Doe', 'DJ John', '1990-05-15', 'http://johndoe.com', 'http://instagram.com/djjohn'),
+('Maria Smith', NULL, '1985-11-23', NULL, NULL);
 
 -- Band
 INSERT INTO Band (band_name, formation_date, website) VALUES
