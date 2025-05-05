@@ -1,15 +1,16 @@
+-- Drop tables in order from most dependent (children) to least dependent (parents)
 DROP TABLE IF EXISTS Rating;
 DROP TABLE IF EXISTS Resale_Queue;
 DROP TABLE IF EXISTS Website;
 DROP TABLE IF EXISTS Event_Staff;
-DROP TABLE IF EXISTS Staff;
 DROP TABLE IF EXISTS Ticket;
-DROP TABLE IF EXISTS Visitor;
 DROP TABLE IF EXISTS Band_Member;
-DROP TABLE IF EXISTS Band;
 DROP TABLE IF EXISTS Artist_Genre;
 DROP TABLE IF EXISTS Performance;
 DROP TABLE IF EXISTS Event;
+DROP TABLE IF EXISTS Staff;
+DROP TABLE IF EXISTS Visitor;
+DROP TABLE IF EXISTS Band;
 DROP TABLE IF EXISTS Artist;
 DROP TABLE IF EXISTS Scene;
 DROP TABLE IF EXISTS Festival;
@@ -90,8 +91,8 @@ CREATE TABLE Artist_Genre
 (
     artist_id INT NOT NULL,
     genre VARCHAR(50) NOT NULL,
-    subgenre VARCHAR(50),
-    PRIMARY KEY (artist_id, genre, subgenre),
+    subgenre VARCHAR(50), -- can be NULL or NOT NULL as you wish
+    PRIMARY KEY (artist_id, genre),
     FOREIGN KEY (artist_id) REFERENCES Artist(artist_id)
 );
 
@@ -138,9 +139,12 @@ CREATE TABLE Ticket
     ticket_category VARCHAR(50),
     used BIT DEFAULT 0,
     -- Use BIT (0 for FALSE, 1 for TRUE)
+    -- Προσθήκη performance_id για βελτιστοποίηση b6 (αν το επιτρέπει το μοντέλο σας)
+    performance_id INT NULL,
     CONSTRAINT unique_ticket_per_visitor_event UNIQUE (event_id, visitor_id),
     FOREIGN KEY (event_id) REFERENCES Event(event_id),
-    FOREIGN KEY (visitor_id) REFERENCES Visitor(visitor_id)
+    FOREIGN KEY (visitor_id) REFERENCES Visitor(visitor_id),
+    FOREIGN KEY (performance_id) REFERENCES Performance(performance_id)
 );
 
 -- 6. Staff & Event Staffing
@@ -236,3 +240,22 @@ CREATE INDEX idx_artist_genre_genre ON Artist_Genre(genre);
 
 -- GIA FORCE INDEX USE.
 CREATE INDEX idx_rating_performance_id ON Rating(performance_id);
+
+-- (Προαιρετικά για βελτιστοποίηση b6)
+CREATE INDEX idx_rating_performance_visitor ON Rating(performance_id, visitor_id);
+CREATE INDEX idx_ticket_performance_visitor ON Ticket(performance_id, visitor_id);
+-- (Αν το schema δεν έχει performance_id στο Ticket, αγνοήστε το παραπάνω)
+
+-- After deleting all rows from a table, reset its identity seed like this:
+DBCC CHECKIDENT ('Location', RESEED, 0);
+DBCC CHECKIDENT ('Festival', RESEED, 0);
+DBCC CHECKIDENT ('Scene', RESEED, 0);
+DBCC CHECKIDENT ('Event', RESEED, 0);
+DBCC CHECKIDENT ('Artist', RESEED, 0);
+DBCC CHECKIDENT ('Band', RESEED, 0);
+DBCC CHECKIDENT ('Performance', RESEED, 0);
+DBCC CHECKIDENT ('Visitor', RESEED, 0);
+DBCC CHECKIDENT ('Ticket', RESEED, 0);
+DBCC CHECKIDENT ('Staff', RESEED, 0);
+DBCC CHECKIDENT ('Rating', RESEED, 0);
+DBCC CHECKIDENT ('Website', RESEED, 0);
