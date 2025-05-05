@@ -45,26 +45,26 @@ HAVING
 -- B4: Για κάποιο καλλιτέχνη, βρείτε το μέσο όρο αξιολογήσεων (Ερμηνεία καλλιτεχνών) και εμφάνιση (Συνολική εντύπωση).
 -- PREPI NA DOKIMASTOUN DIAFORA JOIN OPOS LEI O ASTERISKOS.
 -- H MSSQL DEN EXEI FORCE INDEX OPOTE DEN TREXEI H PROTH MORFH.
-SELECT 
-   a.artist_id,
-   a.name,
-    ROUND(AVG((r.interpretation_score + r.sound_lighting_score + 
-                r.stage_presence_score + r.organization_score )/4
-                ), 2) AS average_rating,
-	ROUND(AVG(r.overall_score), 2) AS overall_score
-FROM 
-    Rating r FORCE INDEX (idx_rating_performance_id)
+-- SELECT 
+   -- a.artist_id,
+   -- a.name,
+    -- ROUND(AVG((r.interpretation_score + r.sound_lighting_score + 
+                -- r.stage_presence_score + r.organization_score )/4
+                -- ), 2) AS average_rating,
+	-- ROUND(AVG(r.overall_score), 2) AS overall_score
+-- FROM 
+    -- Rating r FORCE INDEX (idx_rating_performance_id)
     
     
-JOIN 
-    Performance p FORCE INDEX (idx_performance_artist_id) ON r.performance_id = p.performance_id
-JOIN 
-    Artist a ON p.artist_id = a.artist_id
+-- JOIN 
+    -- Performance p FORCE INDEX (idx_performance_artist_id) ON r.performance_id = p.performance_id
+-- JOIN 
+    -- Artist a ON p.artist_id = a.artist_id
     
-WHERE a.artist_id = 3
+-- WHERE a.artist_id = 3
 
-GROUP BY
-   a.artist_id, a.name;
+-- GROUP BY
+-- a.artist_id, a.name;
 -- -------------------------------------------------------------------
     SELECT 
    a.artist_id,
