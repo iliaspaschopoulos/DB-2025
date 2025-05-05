@@ -134,7 +134,7 @@ CREATE TABLE Ticket
     purchase_date DATE NOT NULL,
     cost DECIMAL(10,2) NOT NULL,
     payment_method VARCHAR(50) CHECK (payment_method IN ('credit card','debit card','bank transfer','not cash')),
-    ean BIGINT NOT NULL UNIQUE,
+    ean BIGINT,
     ticket_category VARCHAR(50),
     used BIT DEFAULT 0,
     -- Use BIT (0 for FALSE, 1 for TRUE)
