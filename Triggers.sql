@@ -180,3 +180,88 @@ BEGIN
     DEALLOCATE artist_cursor;
 END;
 GO
+
+
+-- Trigger for EAN-13
+
+-- Trigger to auto-generate EAN-13 code for Ticket
+GO
+CREATE TRIGGER trg_Ticket_GenerateEAN
+ON Ticket
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Only generate EAN if it was not provided (NULL or 0)
+    UPDATE t
+    SET ean = 
+        CAST(
+            LEFT(
+                RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3)
+            , 12)
+        AS BIGINT
+        ) * 10
+        + (
+            10 - (
+                (
+                    CAST(SUBSTRING(
+                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 1, 1) AS INT) +
+                    CAST(SUBSTRING(
+                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 3, 1) AS INT) +
+                    CAST(SUBSTRING(
+                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 5, 1) AS INT) +
+                    CAST(SUBSTRING(
+                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 7, 1) AS INT) +
+                    CAST(SUBSTRING(
+                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 9, 1) AS INT) +
+                    CAST(SUBSTRING(
+                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 11, 1) AS INT)
+                )
+                + 3 * (
+                    CAST(SUBSTRING(
+                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 2, 1) AS INT) +
+                    CAST(SUBSTRING(
+                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 4, 1) AS INT) +
+                    CAST(SUBSTRING(
+                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 6, 1) AS INT) +
+                    CAST(SUBSTRING(
+                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 8, 1) AS INT) +
+                    CAST(SUBSTRING(
+                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 10, 1) AS INT) +
+                    CAST(SUBSTRING(
+                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 12, 1) AS INT)
+                )
+            ) % 10
+        ) % 10
+    FROM Ticket t
+    JOIN inserted i ON t.ticket_id = i.ticket_id
+    WHERE (i.ean IS NULL OR i.ean = 0);
+END
+GO
