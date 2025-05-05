@@ -66,8 +66,7 @@ CREATE TABLE Artist
     stage_name VARCHAR(100),
     date_of_birth DATE NOT NULL,
     website VARCHAR(255),
-    instagram_profile VARCHAR(255),
-    consecutive_years_appearing INT NOT NULL
+    instagram_profile VARCHAR(255)
 );
 
 CREATE TABLE Band
