@@ -231,6 +231,44 @@ JOIN filtered_counts b
  AND a.visitor_id <> b.visitor_id
 ORDER BY a.year, a.num_events, a.visitor_id;
 
+-- B12: Βρείτε το προσωπικό που απαιτείται για κάθε ημέρα του φεστιβάλ, παρέχοντας ανάλυση ανά κατηγορία (τεχνικό προσωπικό ασφαλείας, βοηθητικό προσωπικό);
+WITH total_visits AS (
+    SELECT 
+        e.event_id,
+        COUNT(t.ticket_id) AS total_tickets
+    FROM Event e
+    JOIN Ticket t ON e.event_id = t.event_id
+    GROUP BY e.event_id
+),
+Security_Personnel AS (
+    SELECT 
+        tv.event_id,
+        CEILING(tv.total_tickets * 0.05) AS num_of_security
+    FROM total_visits tv
+),
+Secondary_Personnel AS (
+    SELECT 
+        tv.event_id,
+        CEILING(tv.total_tickets * 0.02) AS num_of_secondary
+    FROM total_visits tv
+),
+Technical_Personnel AS (
+    SELECT 
+        tv.event_id,
+        20 AS num_of_technical
+    FROM total_visits tv
+)
+
+SELECT 
+    sp.event_id,
+    sp.num_of_security,
+    sec.num_of_secondary,
+    tech.num_of_technical
+FROM Security_Personnel sp
+JOIN Secondary_Personnel sec ON sp.event_id = sec.event_id
+JOIN Technical_Personnel tech ON sp.event_id = tech.event_id
+ORDER BY sp.event_id;
+
 
 
 
