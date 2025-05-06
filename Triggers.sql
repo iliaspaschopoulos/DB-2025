@@ -208,60 +208,26 @@ BEGIN
             10 - (
                 (
                     CAST(SUBSTRING(
+        (
+            10 - (
+                (
+                    -- Sum odd positions (1,3,5,7,9,11)
+                    SUBSTRING(
                         RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
                         RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 1, 1) AS INT) +
-                    CAST(SUBSTRING(
-                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
-                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 3, 1) AS INT) +
-                    CAST(SUBSTRING(
-                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
-                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 5, 1) AS INT) +
-                    CAST(SUBSTRING(
-                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
-                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 7, 1) AS INT) +
-                    CAST(SUBSTRING(
-                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
-                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 9, 1) AS INT) +
-                    CAST(SUBSTRING(
-                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
-                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 11, 1) AS INT)
+                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 1, 1
+                    ) +
+                    SUBSTRING(..., 3, 1) + -- repeat for all odd positions
+                    ... -- continue for all positions
                 )
                 + 3 * (
-                    CAST(SUBSTRING(
-                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
-                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 2, 1) AS INT) +
-                    CAST(SUBSTRING(
-                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
-                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 4, 1) AS INT) +
-                    CAST(SUBSTRING(
-                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
-                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 6, 1) AS INT) +
-                    CAST(SUBSTRING(
-                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
-                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 8, 1) AS INT) +
-                    CAST(SUBSTRING(
-                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
-                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 10, 1) AS INT) +
-                    CAST(SUBSTRING(
-                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
-                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 12, 1) AS INT)
+                    -- Sum even positions (2,4,6,8,10,12)
+                    SUBSTRING(..., 2, 1) + -- repeat for all even positions
+                    ...
                 )
             ) % 10
         ) % 10
     FROM Ticket t
-    JOIN inserted i ON t.ticket_id = i.ticket_id
-    WHERE (i.ean IS NULL OR i.ean = 0);
+    JOIN inserted i ON t.ticket_id = i.ticket_id;
 END
 GO

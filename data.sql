@@ -28,6 +28,7 @@ DBCC CHECKIDENT ('Staff', RESEED, 0);
 DBCC CHECKIDENT ('Rating', RESEED, 0);
 DBCC CHECKIDENT ('Website', RESEED, 0);
 
+
 -- 1. Location
 INSERT INTO Location (address, latitude, longitude, city, country, continent) VALUES
 ('123 Main St', 37.9838, 23.7275, 'Athens', 'Greece', 'Europe'),      -- location_id = 1
