@@ -281,6 +281,37 @@ filtered_counts AS (
 )
 SELECT * FROM filtered_counts;
 
+--b8: Βρείτε το προσωπικό υποστήριξης που δεν έχει προγραμματισμένη εργασία σε συγκεκριμένη ημερομηνία;
+WITH All_Posibol_combinations AS(
+SELECT
+	e.event_date,
+	es.staff_id
+
+FROM Event e
+CROSS JOIN Event_Staff es
+where es.staff_category = 'auxiliary'
+ORDER BY e.event_date
+),
+Asigned_dates AS(
+SELECT
+	e.event_date,
+	es.staff_id
+
+FROM Event e
+JOIN Event_Staff es ON e.event_id = es.event_id
+where es.staff_category = 'auxiliary'
+ORDER BY e.event_date
+)
+SELECT 
+apc.event_date,
+apc.staff_id,
+s.name
+FROM Staff s
+JOIN All_Posibol_combinations apc ON s.staff_id = apc.staff_id
+LEFT JOIN Asigned_dates ad  ON apc.staff_id = ad.staff_id AND apc.event_date = ad.event_date
+WHERE ad.staff_id IS NULL
+ORDER BY apc.event_date;
+
 
 
 
