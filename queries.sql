@@ -246,19 +246,19 @@ Security_Personnel AS (
 		CEIL(tv.total_tickets * 0.05) AS num_of_security
 	FROM total_visits tv
 ),
-Secondary_Personnel AS (
+auxiliary_Personnel AS (
 	SELECT 
 		tv.event_id,
-		CEIL(tv.total_tickets * 0.02) AS num_of_secondary
+		CEIL(tv.total_tickets * 0.02) AS num_of_auxiliary
 	FROM total_visits tv
 )
 SELECT 
     sp.event_id,
     sp.num_of_security,
-    sec.num_of_secondary,
+    sec.num_of_auxiliary,
     20 AS num_of_technical
 FROM Security_Personnel sp
-JOIN Secondary_Personnel sec ON sp.event_id = sec.event_id
+JOIN auxiliary_Personnel sec ON sp.event_id = sec.event_id
 ORDER BY sp.event_id;
 
 -- b13: Βρείτε τους καλλιτέχνες που έχουν συμμετάσχει σε φεστιβάλ σε τουλάχιστον 3 διαφορετικές ηπείρους.
