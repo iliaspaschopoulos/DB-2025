@@ -271,3 +271,29 @@ BEGIN
     WHERE Ticket.ticket_id = gen.ticket_id;
 END
 GO
+-- ------------------------------------------
+-- trigger ena scene ana event
+CREATE TRIGGER trg_one_scene_per_event
+ON Event
+INSTEAD OF INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (
+        SELECT 1
+        FROM Inserted i
+        JOIN Event e
+          ON e.festival_id = i.festival_id
+         AND e.event_date = i.event_date
+    )
+    BEGIN
+        THROW 50000, 'Κάθε event μπορεί να έχει μόνο μία σκηνή.', 1;
+        RETURN;
+    END
+
+    -- Αν δεν υπάρχει διπλή σκηνή, προχωράμε με την εισαγωγή
+    INSERT INTO Event (event_id, festival_id, event_date, location_id, scene_id)
+    SELECT event_id, festival_id, event_date, location_id, scene_id
+    FROM Inserted;
+END;
