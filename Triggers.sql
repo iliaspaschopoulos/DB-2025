@@ -20,6 +20,18 @@ IF OBJECT_ID('[dbo].[check_consecutive_years]', 'TR') IS NOT NULL
     DROP TRIGGER [dbo].[check_consecutive_years];
 GO
 
+IF OBJECT_ID('[dbo].[check_consecutive_years_performance]', 'TR') IS NOT NULL
+    DROP TRIGGER [dbo].[check_consecutive_years_performance];
+GO
+
+IF OBJECT_ID('[dbo].[trg_Ticket_GenerateEAN]', 'TR') IS NOT NULL
+    DROP TRIGGER [dbo].[trg_Ticket_GenerateEAN];
+GO
+
+IF OBJECT_ID('[dbo].[trg_one_scene_per_event]', 'TR') IS NOT NULL
+    DROP TRIGGER [dbo].[trg_one_scene_per_event];
+GO
+
 -- VIP Trigger: Enforce VIP ticket limit per event/scene -- Q6
 CREATE TRIGGER VIP
 ON Ticket
@@ -53,54 +65,71 @@ ON Event_Staff
 AFTER INSERT, UPDATE
 AS
 BEGIN
-    -- TODO: Improve for multi-row inserts (currently only works for single row)
-    IF (
-        (SELECT COUNT(*)
-    FROM Event_Staff
-    WHERE event_id = (SELECT event_id
-        FROM inserted)
-        AND scene_id = (SELECT scene_id
-        FROM inserted)
-        AND staff_category = 'security')
-        <
-        ((SELECT Scene.max_capacity
-    FROM Scene
-    WHERE Scene.scene_id = (SELECT scene_id
-    FROM inserted)) * 0.05)
+    SET NOCOUNT ON;
+
+    -- Check for security staff violations
+    -- This checks if any event/scene combination affected by the DML operation
+    -- now has insufficient security staff.
+    IF EXISTS (
+        SELECT 1
+        FROM (SELECT DISTINCT event_id, scene_id FROM inserted) i  -- Process each affected event/scene combination once
+        JOIN Scene sc ON i.scene_id = sc.scene_id
+        WHERE (
+            -- Count total security staff for this specific event_id and scene_id AFTER the DML
+            SELECT COUNT(*)
+            FROM Event_Staff es
+            WHERE es.event_id = i.event_id
+              AND es.scene_id = i.scene_id
+              AND es.staff_category = 'security'
+        ) < (sc.max_capacity * 0.05) -- Compare with 5% of that scene's capacity
     )
     BEGIN
         ROLLBACK TRANSACTION;
-        RAISERROR ('Security staff must be at least 5%% of the stage capacity.', 16, 1);
+        RAISERROR ('Security staff must be at least 5%% of the stage capacity for one or more affected events/scenes.', 16, 1);
+        RETURN;
     END
 
-    -- Check if auxiliary staff is less than 2% of the stage capacity
-    IF (
-        (SELECT COUNT(*)
-    FROM Event_Staff
-    WHERE event_id = (SELECT event_id
-        FROM inserted)
-        AND scene_id = (SELECT scene_id
-        FROM inserted)
-        AND staff_category = 'auxiliary')
-        <
-        ((SELECT Scene.max_capacity
-    FROM Scene
-    WHERE Scene.scene_id = (SELECT scene_id
-    FROM inserted)) * 0.02)
+    -- Check for auxiliary staff violations
+    -- This checks if any event/scene combination affected by the DML operation
+    -- now has insufficient auxiliary staff.
+    IF EXISTS (
+        SELECT 1
+        FROM (SELECT DISTINCT event_id, scene_id FROM inserted) i -- Process each affected event/scene combination once
+        JOIN Scene sc ON i.scene_id = sc.scene_id
+        WHERE (
+            -- Count total auxiliary staff for this specific event_id and scene_id AFTER the DML
+            SELECT COUNT(*)
+            FROM Event_Staff es
+            WHERE es.event_id = i.event_id
+              AND es.scene_id = i.scene_id
+              AND es.staff_category = 'auxiliary'
+        ) < (sc.max_capacity * 0.02) -- Compare with 2% of that scene's capacity
     )
     BEGIN
-        ROLLBACK TRANSACTION;
-        RAISERROR ('Auxiliary staff must be at least 2%% of the stage capacity.', 16, 1);
+        DECLARE @DebugEventID INT, @DebugSceneID INT, @DebugAuxCount INT, @DebugSceneCapacity INT, @DebugRequired DECIMAL(5,2);
+        SELECT TOP 1 @DebugEventID = i.event_id, @DebugSceneID = i.scene_id, @DebugSceneCapacity = sc.max_capacity
+        FROM (SELECT DISTINCT event_id, scene_id FROM inserted) i
+        JOIN Scene sc ON i.scene_id = sc.scene_id
+        WHERE (SELECT COUNT(*) FROM Event_Staff es WHERE es.event_id = i.event_id AND es.scene_id = i.scene_id AND es.staff_category = 'auxiliary') < (sc.max_capacity * 0.02);
+
+        IF @DebugEventID IS NOT NULL
+        BEGIN
+            SELECT @DebugAuxCount = COUNT(*) FROM Event_Staff es WHERE es.event_id = @DebugEventID AND es.scene_id = @DebugSceneID AND es.staff_category = 'auxiliary';
+            SET @DebugRequired = @DebugSceneCapacity * 0.02;
+            PRINT 'TRIGGER DEBUG: Failing for EventID=' + CAST(@DebugEventID AS VARCHAR) + 
+                  ', SceneID=' + CAST(@DebugSceneID AS VARCHAR) + 
+                  ', AuxCount=' + CAST(@DebugAuxCount AS VARCHAR) + 
+                  ', SceneCapacity=' + CAST(@DebugSceneCapacity AS VARCHAR) +
+                  ', RequiredCount (calc)=' + CAST(@DebugRequired AS VARCHAR);
+        END
+        RAISERROR ('Auxiliary staff must be at least 2%% of the stage capacity for one or more affected events/scenes.', 16, 1);
+        RETURN;
     END
 END;
 --------------------------------------------------------------
 GO------------------------------------------------------------
 --------------------------------------------------------------
 -- Artist Performance Trigger: Prevent >3 consecutive years for an artist
-IF OBJECT_ID('[dbo].[check_consecutive_years_performance]', 'TR') IS NOT NULL
-    DROP TRIGGER [dbo].[check_consecutive_years_performance];
-GO
-
 CREATE TRIGGER check_consecutive_years_performance
 ON Performance
 AFTER INSERT
@@ -189,11 +218,6 @@ GO
 -- Trigger for EAN-13
 
 -- Trigger to auto-generate EAN-13 code for Ticket
-GO
-IF OBJECT_ID('[dbo].[trg_Ticket_GenerateEAN]', 'TR') IS NOT NULL
-    DROP TRIGGER [dbo].[trg_Ticket_GenerateEAN];
-GO
-
 CREATE TRIGGER trg_Ticket_GenerateEAN
 ON Ticket
 AFTER INSERT
@@ -280,6 +304,10 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+    -- This condition checks if an event (defined by festival_id and event_date) 
+    -- already exists. If so, it prevents inserting another event for the same 
+    -- festival and date, effectively ensuring that such a conceptual event 
+    -- is tied to only one scene (the one from the first insertion).
     IF EXISTS (
         SELECT 1
         FROM Inserted i
@@ -288,12 +316,17 @@ BEGIN
          AND e.event_date = i.event_date
     )
     BEGIN
-        THROW 50000, 'Κάθε event μπορεί να έχει μόνο μία σκηνή.', 1;
+        -- Using THROW for modern error handling if on SQL Server 2012+
+        THROW 50001, 'An event for this festival on this date already exists, and thus is already assigned a scene. Cannot assign another scene.', 1;
+        -- For older SQL Server versions, use RAISERROR:
+        -- RAISERROR ('An event for this festival on this date already exists, and thus is already assigned a scene. Cannot assign another scene.', 16, 1);
         RETURN;
     END
 
-    -- Αν δεν υπάρχει διπλή σκηνή, προχωράμε με την εισαγωγή
-    INSERT INTO Event (event_id, festival_id, event_date, location_id, scene_id)
-    SELECT event_id, festival_id, event_date, location_id, scene_id
+    -- If no conflicting event exists, proceed with the insertion.
+    -- Only insert columns that exist in the Event table.
+    -- event_id is an IDENTITY column and should not be in the list.
+    INSERT INTO Event (festival_id, event_date, scene_id) -- Removed event_id and location_id
+    SELECT festival_id, event_date, scene_id              -- Removed event_id and location_id
     FROM Inserted;
 END;
