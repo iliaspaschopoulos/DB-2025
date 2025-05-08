@@ -5,7 +5,8 @@ SELECT
         (r.interpretation_score + r.sound_lighting_score + r.stage_presence_score + r.organization_score) / 4.0
     ) AS avg_rating_by_visitor
 FROM Ticket t
-JOIN Performance p ON t.performance_id = p.performance_id
+JOIN Event e ON t.event_id = e.event_id
+JOIN Performance p ON p.event_id = e.event_id
 LEFT JOIN Rating r ON r.performance_id = p.performance_id AND r.visitor_id = t.visitor_id
 WHERE t.visitor_id = 1
 GROUP BY p.performance_id;
@@ -22,7 +23,8 @@ SELECT
         (r.interpretation_score + r.sound_lighting_score + r.stage_presence_score + r.organization_score) / 4.0
     ) AS avg_rating_by_visitor
 FROM Ticket t
-JOIN Performance p ON t.performance_id = p.performance_id
+JOIN Event e ON t.event_id = e.event_id
+JOIN Performance p ON p.event_id = e.event_id
 LEFT JOIN Rating r ON r.performance_id = p.performance_id AND r.visitor_id = t.visitor_id
 WHERE t.visitor_id = 1
 GROUP BY p.performance_id
@@ -39,7 +41,8 @@ SELECT
         (r.interpretation_score + r.sound_lighting_score + r.stage_presence_score + r.organization_score) / 4.0
     ) AS avg_rating_by_visitor
 FROM Ticket t
-JOIN Performance p ON t.performance_id = p.performance_id
+JOIN Event e ON t.event_id = e.event_id
+JOIN Performance p ON p.event_id = e.event_id
 LEFT JOIN Rating r ON r.performance_id = p.performance_id AND r.visitor_id = t.visitor_id
 WHERE t.visitor_id = 1
 GROUP BY p.performance_id
@@ -56,7 +59,8 @@ SELECT
         (r.interpretation_score + r.sound_lighting_score + r.stage_presence_score + r.organization_score) / 4.0
     ) AS avg_rating_by_visitor
 FROM Ticket t
-JOIN Performance p ON t.performance_id = p.performance_id
+JOIN Event e ON t.event_id = e.event_id
+JOIN Performance p ON p.event_id = e.event_id
 LEFT JOIN Rating r ON r.performance_id = p.performance_id AND r.visitor_id = t.visitor_id
 WHERE t.visitor_id = 1
 GROUP BY p.performance_id
@@ -75,4 +79,4 @@ OPTION (MERGE JOIN);
 -- - Η χρήση κατάλληλων index μπορεί να βελτιώσει σημαντικά την απόδοση.
 --  Ως αναμενόμενο, το LOOP JOIN είναι πιο αποδοτικό, καθώς οι πίνακες που έχουμε φτιάξει είναι μικροί.
 --  Το αρχείο generate_bulk_data.py μπορεί να χρησιμοποιηθεί για να δημιουργήσει δεδομένα για τους πίνακες και να τους κάνει μεγαλύτερους.
---  θα μπορούσε να χρησιμοποιηθεί για την δοκιμή των παραπάνω στρατηγικών join. 
+--  θα μπορούσε να χρησιμοποιηθεί για την δοκιμή των παραπάνω στρατηγικών join.

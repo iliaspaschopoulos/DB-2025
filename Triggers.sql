@@ -12,6 +12,10 @@ IF OBJECT_ID('Staff', 'TR') IS NOT NULL
     DROP TRIGGER Staff;
 GO
 
+IF OBJECT_ID('StaffTrigger', 'TR') IS NOT NULL
+    DROP TRIGGER StaffTrigger;
+GO
+
 IF OBJECT_ID('[dbo].[check_consecutive_years]', 'TR') IS NOT NULL
     DROP TRIGGER [dbo].[check_consecutive_years];
 GO
@@ -186,6 +190,10 @@ GO
 
 -- Trigger to auto-generate EAN-13 code for Ticket
 GO
+IF OBJECT_ID('[dbo].[trg_Ticket_GenerateEAN]', 'TR') IS NOT NULL
+    DROP TRIGGER [dbo].[trg_Ticket_GenerateEAN];
+GO
+
 CREATE TRIGGER trg_Ticket_GenerateEAN
 ON Ticket
 AFTER INSERT
@@ -193,41 +201,73 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Only generate EAN if it was not provided (NULL or 0)
-    UPDATE t
-    SET ean = 
-        CAST(
-            LEFT(
-                RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
-                RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3)
-            , 12)
-        AS BIGINT
-        ) * 10
-        + (
-            10 - (
-                (
-                    CAST(SUBSTRING(
-        (
-            10 - (
-                (
-                    -- Sum odd positions (1,3,5,7,9,11)
-                    SUBSTRING(
-                        RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
-                        RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
-                        RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 1, 1
+    -- Generate EAN-13 for each inserted ticket
+    UPDATE Ticket
+    SET ean = CAST(base_code AS BIGINT) * 10 + check_digit
+    FROM (
+        SELECT 
+            i.ticket_id,
+            RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+            RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+            RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3) AS base_code,
+            (
+                10 - (
+                    (
+                        CAST(SUBSTRING(
+                            RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                            RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                            RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 1, 1) AS INT) +
+                        CAST(SUBSTRING(
+                            RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                            RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                            RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 3, 1) AS INT) +
+                        CAST(SUBSTRING(
+                            RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                            RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                            RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 5, 1) AS INT) +
+                        CAST(SUBSTRING(
+                            RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                            RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                            RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 7, 1) AS INT) +
+                        CAST(SUBSTRING(
+                            RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                            RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                            RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 9, 1) AS INT) +
+                        CAST(SUBSTRING(
+                            RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                            RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                            RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 11, 1) AS INT)
                     ) +
-                    SUBSTRING(..., 3, 1) + -- repeat for all odd positions
-                    ... -- continue for all positions
-                )
-                + 3 * (
-                    -- Sum even positions (2,4,6,8,10,12)
-                    SUBSTRING(..., 2, 1) + -- repeat for all even positions
-                    ...
-                )
-            ) % 10
-        ) % 10
-    FROM Ticket t
-    JOIN inserted i ON t.ticket_id = i.ticket_id;
+                    3 * (
+                        CAST(SUBSTRING(
+                            RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                            RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                            RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 2, 1) AS INT) +
+                        CAST(SUBSTRING(
+                            RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                            RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                            RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 4, 1) AS INT) +
+                        CAST(SUBSTRING(
+                            RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                            RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                            RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 6, 1) AS INT) +
+                        CAST(SUBSTRING(
+                            RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                            RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                            RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 8, 1) AS INT) +
+                        CAST(SUBSTRING(
+                            RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                            RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                            RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 10, 1) AS INT) +
+                        CAST(SUBSTRING(
+                            RIGHT('000000' + CAST(i.ticket_id AS VARCHAR(6)), 6) +
+                            RIGHT('000' + CAST(i.event_id AS VARCHAR(3)), 3) +
+                            RIGHT('000' + CAST(i.visitor_id AS VARCHAR(3)), 3), 12, 1) AS INT)
+                    )
+                ) % 10
+            ) % 10 AS check_digit
+        FROM inserted i
+    ) AS gen
+    WHERE Ticket.ticket_id = gen.ticket_id;
 END
 GO
