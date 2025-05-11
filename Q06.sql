@@ -1,4 +1,3 @@
--- Αντικαταστήστε το 1 με το visitor_id που σας ενδιαφέρει.
 SELECT
     p.performance_id,
     AVG(
