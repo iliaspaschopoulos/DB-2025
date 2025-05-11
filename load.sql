@@ -88,6 +88,8 @@ INSERT INTO Scene (name, description, max_capacity, equipment_info) VALUES ('Sce
 
 INSERT INTO Scene (name, description, max_capacity, equipment_info) VALUES ('Scene31', 'Description for Scene31', 400, 'Equipment info 31');
 INSERT INTO Scene (name, description, max_capacity, equipment_info) VALUES ('Scene32', 'Description for Scene32', 400, 'Equipment info 32');
+INSERT INTO Scene (name, description, max_capacity, equipment_info) VALUES ('Scene33', 'Description for Scene33', 400, 'Equipment info 33');
+
 
 -- Artists
 INSERT INTO Artist (name, stage_name, date_of_birth, website, instagram_profile) VALUES ('Artist1', 'Stage1', '1982-03-15', NULL, NULL);
