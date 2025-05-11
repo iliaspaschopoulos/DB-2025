@@ -86,6 +86,9 @@ INSERT INTO Scene (name, description, max_capacity, equipment_info) VALUES ('Sce
 INSERT INTO Scene (name, description, max_capacity, equipment_info) VALUES ('Scene29', 'Description for Scene29', 500, 'Equipment info 29');
 INSERT INTO Scene (name, description, max_capacity, equipment_info) VALUES ('Scene30', 'Description for Scene30', 400, 'Equipment info 30');
 
+INSERT INTO Scene (name, description, max_capacity, equipment_info) VALUES ('Scene31', 'Description for Scene31', 400, 'Equipment info 31');
+INSERT INTO Scene (name, description, max_capacity, equipment_info) VALUES ('Scene32', 'Description for Scene32', 400, 'Equipment info 32');
+
 -- Artists
 INSERT INTO Artist (name, stage_name, date_of_birth, website, instagram_profile) VALUES ('Artist1', 'Stage1', '1982-03-15', NULL, NULL);
 INSERT INTO Artist (name, stage_name, date_of_birth, website, instagram_profile) VALUES ('Artist2', 'Stage2', '1987-09-21', NULL, NULL);
@@ -273,7 +276,6 @@ INSERT INTO Visitor (first_name, last_name, contact, age) VALUES ('Visitor49', '
 INSERT INTO Visitor (first_name, last_name, contact, age) VALUES ('Visitor50', 'Last50', 'v50@example.com', 60);
 
 -- Events
-INSERT INTO Event (festival_id, scene_id, event_date) VALUES (4, 1, '2025-06-01');
 INSERT INTO Event (festival_id, scene_id, event_date) VALUES (10, 2, '2027-12-02');
 INSERT INTO Event (festival_id, scene_id, event_date) VALUES (3, 3, '2020-10-10');
 INSERT INTO Event (festival_id, scene_id, event_date) VALUES (5, 4, '2020-03-10');
@@ -304,8 +306,15 @@ INSERT INTO Event (festival_id, scene_id, event_date) VALUES (9, 28, '2020-08-25
 INSERT INTO Event (festival_id, scene_id, event_date) VALUES (2, 29, '2026-06-01');
 INSERT INTO Event (festival_id, scene_id, event_date) VALUES (2, 30, '2022-04-05');
 
+INSERT INTO Event (festival_id, scene_id, event_date) VALUES (4, 1, '2025-06-01');
+INSERT INTO Event (festival_id, scene_id, event_date) VALUES (4, 31, '2025-06-02');
+INSERT INTO Event (festival_id, scene_id, event_date) VALUES (4, 32, '2025-06-03');
+
 -- Performances
+INSERT INTO Performance (event_id, artist_id, band_id, performance_type, start_time, duration, break_duration) VALUES (32, 34, NULL, 'warm up', '19:00', '01:00:00', '00:18:00');
+INSERT INTO Performance (event_id, artist_id, band_id, performance_type, start_time, duration, break_duration) VALUES (33, 34, NULL, 'warm up', '19:00', '01:00:00', '00:18:00');
 INSERT INTO Performance (event_id, artist_id, band_id, performance_type, start_time, duration, break_duration) VALUES (18, 34, NULL, 'warm up', '19:00', '01:00:00', '00:18:00');
+
 INSERT INTO Performance (event_id, artist_id, band_id, performance_type, start_time, duration, break_duration) VALUES (16, NULL, 9, 'warm up', '20:00', '02:00:00', '00:12:00');
 INSERT INTO Performance (event_id, artist_id, band_id, performance_type, start_time, duration, break_duration) VALUES (7, 33, NULL, 'headline', '16:00', '02:00:00', '00:06:00');
 INSERT INTO Performance (event_id, artist_id, band_id, performance_type, start_time, duration, break_duration) VALUES (18, NULL, 6, 'Special guest', '20:00', '01:00:00', '00:13:00');
