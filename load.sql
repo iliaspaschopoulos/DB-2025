@@ -309,6 +309,8 @@ INSERT INTO Event (festival_id, scene_id, event_date) VALUES (2, 30, '2022-04-05
 INSERT INTO Event (festival_id, scene_id, event_date) VALUES (4, 1, '2025-06-01');
 INSERT INTO Event (festival_id, scene_id, event_date) VALUES (4, 31, '2025-06-02');
 INSERT INTO Event (festival_id, scene_id, event_date) VALUES (4, 32, '2025-06-03');
+INSERT INTO Event (festival_id, scene_id, event_date) VALUES (4, 33, '2025-06-04');
+
 
 -- Performances
 INSERT INTO Performance (event_id, artist_id, band_id, performance_type, start_time, duration, break_duration) VALUES (32, 34, NULL, 'warm up', '19:00', '01:00:00', '00:18:00');
