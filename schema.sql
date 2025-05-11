@@ -80,7 +80,7 @@ CREATE TABLE Band
 
 CREATE TABLE Band_Member
 (
-    band_id INT NOT NULL,
+    band_id INT NOT NULL,  --ΝΑ ΔΙΑΓΡΑΦΕΙ ΤΟ ΝΟΤ ΝΥΛΛ
     artist_id INT NOT NULL,
     PRIMARY KEY (band_id, artist_id),
     FOREIGN KEY (band_id) REFERENCES Band(band_id),
