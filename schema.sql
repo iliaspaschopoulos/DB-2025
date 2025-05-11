@@ -243,7 +243,8 @@ CREATE INDEX idx_rating_performance_id ON Rating(performance_id);
 -- (Προαιρετικά για βελτιστοποίηση b6)
 CREATE INDEX idx_rating_performance_visitor ON Rating(performance_id, visitor_id);
 
--- After deleting all rows from a table, reset its identity seed like this:
+-- Index resetting σε περίπτωση διαγραφής δεδομένων
+-- Βελτιστοποίηση βάσης
 DBCC CHECKIDENT ('Location', RESEED, 0);
 DBCC CHECKIDENT ('Festival', RESEED, 0);
 DBCC CHECKIDENT ('Scene', RESEED, 0);
