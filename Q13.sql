@@ -8,7 +8,7 @@ WITH Different_Continents AS (
    JOIN event e ON f.festival_id = e.festival_id
    JOIN performance p ON p.event_id = e.event_id
    JOIN artist a ON p.artist_id = a.artist_id
-   GROUP BY a.artist_id
+   GROUP BY a.artist_id, a.name
 ),
 filtered_counts AS (
    SELECT *
