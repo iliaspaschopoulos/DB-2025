@@ -316,10 +316,7 @@ BEGIN
          AND e.event_date = i.event_date
     )
     BEGIN
-        -- Using THROW for modern error handling if on SQL Server 2012+
         THROW 50001, 'An event for this festival on this date already exists, and thus is already assigned a scene. Cannot assign another scene.', 1;
-        -- For older SQL Server versions, use RAISERROR:
-        -- RAISERROR ('An event for this festival on this date already exists, and thus is already assigned a scene. Cannot assign another scene.', 16, 1);
         RETURN;
     END
 
