@@ -323,7 +323,7 @@ BEGIN
     -- If no conflicting event exists, proceed with the insertion.
     -- Only insert columns that exist in the Event table.
     -- event_id is an IDENTITY column and should not be in the list.
-    INSERT INTO Event (festival_id, event_date, scene_id) -- Removed event_id and location_id
-    SELECT festival_id, event_date, scene_id              -- Removed event_id and location_id
+    INSERT INTO Event (festival_id, event_date, scene_id)
+    SELECT festival_id, event_date, scene_id              
     FROM Inserted;
 END;
