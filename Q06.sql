@@ -1,4 +1,4 @@
-SET SHOWPLAN_XML ON;
+SET SHOWPLAN_ALL ON;
 GO
 SELECT
     p.performance_id,
@@ -12,7 +12,7 @@ LEFT JOIN Rating r ON r.performance_id = p.performance_id AND r.visitor_id = t.v
 WHERE t.visitor_id = 1
 GROUP BY p.performance_id;
 GO
-SET SHOWPLAN_XML OFF;
+SET SHOWPLAN_ALL OFF;
 GO
 -- Στοιχεία Εκτέλεσης (Default Join Strategy):
 --   Total execution time: 00:00:00.190
@@ -23,7 +23,7 @@ GO
 --       - Nested Loops (Inner Join, Node 6): Εκτιμώμενο Κόστος CPU: 0.000418, Εκτιμώμενο Κόστος I/O: 0.0
 --       - Stream Aggregate (Node 3): Εκτιμώμενο Κόστος CPU: 6.0963637E-05, Εκτιμώμενο Κόστος I/O: 0.0
 
-SET SHOWPLAN_XML ON;
+SET SHOWPLAN_ALL ON;
 GO
 -- Nested Loops Join
 SELECT
@@ -39,7 +39,7 @@ WHERE t.visitor_id = 1
 GROUP BY p.performance_id
 OPTION (LOOP JOIN);
 GO
-SET SHOWPLAN_XML OFF;
+SET SHOWPLAN_ALL OFF;
 GO
 -- Στοιχεία Εκτέλεσης (Nested Loops Join):
 --   Total execution time: 00:00:00.131
@@ -50,7 +50,7 @@ GO
 --       - Nested Loops (Inner Join, NodeId 6): Εκτιμώμενο Κόστος CPU: 0.000418, Εκτιμώμενο Κόστος I/O: 0
 --       - Stream Aggregate (NodeId 3): Εκτιμώμενο Κόστος CPU: 6.0963637E-05, Εκτιμώμενο Κόστος I/O: 0
 
-SET SHOWPLAN_XML ON;
+SET SHOWPLAN_ALL ON;
 GO
 -- Hash Join
 SELECT
@@ -66,7 +66,7 @@ WHERE t.visitor_id = 1
 GROUP BY p.performance_id
 OPTION (HASH JOIN);
 GO
-SET SHOWPLAN_XML OFF;
+SET SHOWPLAN_ALL OFF;
 GO
 -- Στοιχεία Εκτέλεσης (Hash Join):
 --   Total execution time: 00:00:00.138
@@ -77,7 +77,7 @@ GO
 --       - Hash Match (Inner Join, Node 8): Εκτιμώμενο Κόστος CPU: 0.018323692, Εκτιμώμενο Κόστος I/O: 0.0
 --       - Sort (Node 4): Εκτιμώμενο Κόστος CPU: 0.0011140706, Εκτιμώμενο Κόστος I/O: 0.011261261
 
-SET SHOWPLAN_XML ON;
+SET SHOWPLAN_ALL ON;
 GO
 -- Merge Join
 SELECT
@@ -93,7 +93,7 @@ WHERE t.visitor_id = 1
 GROUP BY p.performance_id
 OPTION (MERGE JOIN);
 GO
-SET SHOWPLAN_XML OFF;
+SET SHOWPLAN_ALL OFF;
 GO
 -- Στοιχεία Εκτέλεσης (Merge Join):
 --   Total execution time: 00:00:00.141
