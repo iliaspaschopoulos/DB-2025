@@ -1,5 +1,12 @@
 # Οδηγός Σύνδεσης DB-2025
 
+## TL;DR
+### Χρήση Azure SQL
+- Από κοινού αποφασίστηκε να χρησιμοποιηθεί ένα interactive database vendor, αντί του XAMPP. Χρησιμοποιήθηκε Azure. Τα βασικά οφέλη χρήσης είναι:
+    - Interactive workflow and data.
+    - Αποφυγή database crash που παρατηρούνται στις εναλλακτικές λύσεις.
+    - Πειραματισμός και εξοικείωση με tools που χρησιμοποιούνται στην αγορά εργασίας.
+
 ## 1. Στοιχεία Σύνδεσης Βάσης Δεδομένων
 
 ### Όνομα Διακομιστή
@@ -7,7 +14,6 @@
 `dbntua2025v2.database.windows.net`
 
 ### Όνομα Βάσης Δεδομένων
-
 `DbNtua2025v2`
 
 ### Στοιχεία Ταυτοποίησης
@@ -25,6 +31,15 @@
 * **Jason**
     * **Όνομα χρήστη**: `perantzakas`
     * **Κωδικός**: `Password123!`
+
+## SQL Server Version and Technicals
+
+- **SQL Server Version**: Azure SQL Database (Engine Version: 12.0.2000.8, Product Level: RTM) / Local (Docker image mssql/server:2022-latest)
+- **Edition**: SQL Azure (Database: General Purpose)
+- **Compatibility Level**: 170 (for DbNtua2025v2)
+- **Collation**: SQL_Latin1_General_CP1_CI_AS (Server and Database)
+- **Service Objective**: GP_S_Gen5_2
+- **Other Technical Details**: InstanceName: NULL, IsIntegratedSecurityOnly: False, IsClustered: False
 
 ## Οδηγίες για Windows
 
@@ -126,8 +141,9 @@
 ## Εισαγωγή δεδομένων
 
 Για την εισαγωγή δεδομένων δημιουργήσαμε 2 αρχεία:
-- generate_bulk_data.py 
+- `generate_bulk_data.py`
     - Δημιουργία του load.sql. Ιδιαίτερη έμφαση στην σειρά εισαγωγής, στα foreign keys matching και στα constraints της βάσης (π.χ. 5% security staff).
+    Το αρχείο παράγει τις εντολές SQL `INSERT` για το `load.sql`. Διασφαλίζει τη σωστή σειρά εισαγωγής (π.χ. πρώτα οι πίνακες `Festivals`, μετά τα `Events`) και τη συνοχή των εξωτερικών κλειδιών (FKs) αποθηκεύοντας και επαναχρησιμοποιώντας τα IDs που παράγονται. Επίσης, εφαρμόζει λογική για την τήρηση κανόνων, όπως ο υπολογισμός του προσωπικού ασφαλείας (`Security Staff`) βάσει της χωρητικότητας της σκηνής, για να ικανοποιηθούν τα triggers της βάσης (`Triggers.sql`).
 - delete_all_data.sql
     - Διαγράφει όλα τα υπάρχοντα δεδομένα.
     - Κάνει rebase indexes.
