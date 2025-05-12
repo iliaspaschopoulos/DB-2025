@@ -9,13 +9,13 @@ GROUP BY e.event_id
 Security_Personnel AS (
 	SELECT 
 		tv.event_id,
-		CEIL(tv.total_tickets * 0.05) AS num_of_security
+		CEILING(tv.total_tickets * 0.05) AS num_of_security
 	FROM total_visits tv
 ),
 auxiliary_Personnel AS (
 	SELECT 
 		tv.event_id,
-		CEIL(tv.total_tickets * 0.02) AS num_of_auxiliary
+		CEILING(tv.total_tickets * 0.02) AS num_of_auxiliary
 	FROM total_visits tv
 )
 SELECT 
