@@ -1,4 +1,4 @@
-SELECT TOP 1
+SELECT 
     f.festival_id,
     ROUND(AVG(
         CASE s.experience_level
