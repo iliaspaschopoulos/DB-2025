@@ -206,7 +206,7 @@ with open('load.sql', 'w', encoding='utf-8') as f:
     for i in range(1, total_staff_generated + 1):
         f.write(
             f"INSERT INTO Staff (name, age, role, experience_level) VALUES "
-            f"('Staff{i}', {random.randint(20, 60)}, '{random.choice(roles)}', '{random.choice(experience_levels)}');\n"
+            f"('Staff{i}', {random.randint(20, 60)}, N'{random.choice(roles)}', N'{random.choice(experience_levels)}');\n"
         )
 
     # Event Staff Data
