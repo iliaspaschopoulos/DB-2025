@@ -31,8 +31,8 @@ public class ArtistDTO {
         // Example: Map ArtistGenre entities to a simpler representation, e.g., set of genre names
         // This requires ArtistGenre to have a method like getGenreName() or similar
         // and ArtistGenreId to have getGenre()
-        if (artist.getArtistGenres() != null) {
-            this.genres = artist.getArtistGenres().stream()
+        if (artist.getGenres() != null) {
+            this.genres = artist.getGenres().stream()
                                 .map(ag -> ag.getId().getGenre()) // Assuming ArtistGenreId has getGenre()
                                 .collect(Collectors.toSet());
         }

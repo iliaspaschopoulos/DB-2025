@@ -24,6 +24,6 @@ public interface PerformanceRepository extends JpaRepository<Performance, Intege
            "LEFT JOIN FETCH p.artist a " +
            "LEFT JOIN FETCH p.band b " +
            "LEFT JOIN FETCH a.genres ag " + // Eagerly fetch artist genres
-           "WHERE p.performanceId = :id")
+           "WHERE p.id = :id") // Changed p.performanceId to p.id
     Optional<Performance> findByIdWithDetails(@Param("id") Integer id);
 }

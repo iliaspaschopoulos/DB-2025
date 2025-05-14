@@ -29,9 +29,6 @@ public class Artist {
     @Column(name = "instagram_profile", length = 255)
     private String instagramProfile;
 
-    @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY) 
-    private Set<ArtistGenre> artistGenres; 
-
     @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Performance> performances;
 
@@ -46,7 +43,7 @@ public class Artist {
     }
 
     // Getters and Setters
-    public Integer getArtistId() { 
+    public Integer getArtistId() {
         return artistId;
     }
 
@@ -70,11 +67,11 @@ public class Artist {
         this.stageName = stageName;
     }
 
-    public LocalDate getDateOfBirth() { 
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(LocalDate dateOfBirth) { 
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -92,14 +89,6 @@ public class Artist {
 
     public void setInstagramProfile(String instagramProfile) {
         this.instagramProfile = instagramProfile;
-    }
-
-    public Set<ArtistGenre> getArtistGenres() { 
-        return artistGenres;
-    }
-
-    public void setArtistGenres(Set<ArtistGenre> artistGenres) { 
-        this.artistGenres = artistGenres;
     }
 
     public Set<Performance> getPerformances() {

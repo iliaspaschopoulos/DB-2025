@@ -51,7 +51,7 @@ public class ArtistControllerIntegrationTest {
         artist1.setWebsite("http://testartist1.com");
         artist1.setInstagramProfile("@tester1");
         // Initialize collections to avoid NullPointerExceptions if accessed
-        artist1.setArtistGenres(Collections.emptySet());
+        artist1.setGenres(Collections.emptySet());
         artist1.setPerformances(Collections.emptySet()); 
         artist1.setBandMembers(Collections.emptySet());
         artist1 = artistRepository.save(artist1);
@@ -65,7 +65,7 @@ public class ArtistControllerIntegrationTest {
         newArtist.setDateOfBirth(LocalDate.of(1990, 10, 20));
         newArtist.setWebsite("http://newartist.com");
         newArtist.setInstagramProfile("@newbie");
-        newArtist.setArtistGenres(Collections.emptySet());
+        newArtist.setGenres(Collections.emptySet());
         newArtist.setPerformances(Collections.emptySet());
         newArtist.setBandMembers(Collections.emptySet());
 
@@ -91,7 +91,7 @@ public class ArtistControllerIntegrationTest {
         artist2.setDateOfBirth(LocalDate.of(1988, 8, 8));
         artist2.setWebsite("http://testartist2.com");
         artist2.setInstagramProfile("@anotherTester");
-        artist2.setArtistGenres(Collections.emptySet());
+        artist2.setGenres(Collections.emptySet());
         artist2.setPerformances(Collections.emptySet());
         artist2.setBandMembers(Collections.emptySet());
         artistRepository.save(artist2);
@@ -135,7 +135,7 @@ public class ArtistControllerIntegrationTest {
         updatedArtistInfo.setWebsite("http://updatedartist.com");
         updatedArtistInfo.setInstagramProfile("@veteran");
         // Collections can remain empty or be updated if needed for the test scope
-        updatedArtistInfo.setArtistGenres(Collections.emptySet());
+        updatedArtistInfo.setGenres(Collections.emptySet());
         updatedArtistInfo.setPerformances(Collections.emptySet());
         updatedArtistInfo.setBandMembers(Collections.emptySet());
 
