@@ -1,6 +1,15 @@
 # DB-2025 Application
 
-This repository contains both a Spring Boot backend (`spring-app/`) and a React frontend (`frontend/`) for managing database tables (Artists, Bands, etc.). The application uses Azure SQL Server for the main database and H2 in-memory for integration tests.
+This repository contains both a Spring Boot backend (`spring-app/`) and a React frontend (`frontend/`) for managing a music festival database that includes artists, bands, events, performances, and more. The application uses Azure SQL Server for the main database and H2 in-memory for integration tests.
+
+## Features
+
+- **Artist Management**: Create, edit, and delete artist profiles
+- **Band Management**: Manage bands and their information
+- **Band Members**: Associate artists with bands
+- **Artist Genres**: Track music genres for each artist 
+- **Events**: Plan and organize festival events at different venues
+- **Performances**: Schedule performances by artists or bands
 
 ---
 

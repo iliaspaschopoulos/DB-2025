@@ -12,7 +12,7 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <NavLink to="/">DB-2025</NavLink>
+        <NavLink to="/">DB-2025 NTUA</NavLink>
       </div>
       
       <button className="navbar-toggle" onClick={toggleMenu}>
@@ -31,6 +31,15 @@ function Navbar() {
         </NavLink>
         <NavLink to="/band-members" className={({ isActive }) => isActive ? "active" : ""}>
           Band Members
+        </NavLink>
+        <NavLink to="/artist-genres" className={({ isActive }) => isActive ? "active" : ""}>
+          Artist Genres
+        </NavLink>
+        <NavLink to="/events" className={({ isActive }) => isActive ? "active" : ""}>
+          Events
+        </NavLink>
+        <NavLink to="/performances" className={({ isActive }) => isActive ? "active" : ""}>
+          Performances
         </NavLink>
       </div>
     </nav>
