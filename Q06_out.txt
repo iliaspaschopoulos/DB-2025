@@ -1,1 +1,10 @@
+performance_id,avg_rating_by_visitor
+38,NULL
+71,NULL
+84,NULL
+44,NULL
+85,NULL
+42,3.750000
+65,NULL
+70,NULL
 
