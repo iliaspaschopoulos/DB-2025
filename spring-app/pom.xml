@@ -14,7 +14,7 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
-        <java.version>23</java.version>
+        <java.version>21</java.version>
         <mockito.version>5.9.0</mockito.version>
         <byte-buddy.version>1.14.12</byte-buddy.version>
         <net.bytebuddy.experimental>true</net.bytebuddy.experimental>

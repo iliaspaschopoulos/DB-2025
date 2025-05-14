@@ -2,7 +2,6 @@ package com.example.dbapp.model;
 
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "Band_Member")
@@ -22,12 +21,6 @@ public class BandMember {
     @MapsId("artistId")
     @JoinColumn(name = "artist_id")
     private Artist artist;
-
-    @Column(name = "role", length = 50)
-    private String role;
-
-    @Column(name = "join_date")
-    private LocalDate joinDate;
 
     public BandMember() {
         // Default constructor
@@ -63,21 +56,5 @@ public class BandMember {
         if (artist != null && artist.getArtistId() != null) {
             this.id.setArtistId(artist.getArtistId());
         }
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public LocalDate getJoinDate() {
-        return joinDate;
-    }
-
-    public void setJoinDate(LocalDate joinDate) {
-        this.joinDate = joinDate;
     }
 }

@@ -59,7 +59,6 @@ public class BandMemberService {
         bandMember.setBand(band); // Ensure association is set
         bandMember.setArtist(artist); // Ensure association is set
         
-        // Role and JoinDate will be null if not provided by frontend, which is fine as they are nullable.
         return bandMemberRepository.save(bandMember);
     }
 
@@ -67,11 +66,6 @@ public class BandMemberService {
     public BandMember updateBandMember(BandMemberId id, BandMember bandMemberDetails) {
         BandMember existingMember = bandMemberRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "BandMember not found with id: " + id));
-
-        // If frontend doesn't send role and joinDate, these will be set to null
-        // due to how Spring maps request body to BandMemberDetails object.
-        existingMember.setRole(bandMemberDetails.getRole());
-        existingMember.setJoinDate(bandMemberDetails.getJoinDate());
         
         // Band and Artist (IDs) are part of the primary key and should not be changed here.
         // If band/artist needs to change, it's a delete and new insert.
