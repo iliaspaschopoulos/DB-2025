@@ -9,7 +9,7 @@ WITH GenreYearCount AS (
     JOIN Event e ON p.event_id = e.event_id
     JOIN Festival f ON e.festival_id = f.festival_id
     GROUP BY ag.genre, f.year
-    HAVING COUNT(DISTINCT p.performance_id) >= 3
+    HAVING COUNT(p.performance_id) >= 3
 ),
 MatchingGenres AS (
     SELECT
