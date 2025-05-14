@@ -140,6 +140,28 @@ INSERT INTO Band (band_name, formation_date, website) VALUES ('Band8', '2000-01-
 INSERT INTO Band (band_name, formation_date, website) VALUES ('Band9', '2020-12-17', NULL);
 INSERT INTO Band (band_name, formation_date, website) VALUES ('Band10', '2014-06-04', NULL);
 
+-- 50% of artists as band members
+INSERT INTO Band_Member (band_id, artist_id) VALUES (1,1);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (2,2);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (3,3);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (4,4);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (5,5);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (6,6);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (7,7);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (8,8);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (9,9);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (10,10);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (1,11);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (2,12);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (3,13);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (4,14);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (5,15);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (6,16);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (7,17);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (8,18);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (9,19);
+INSERT INTO Band_Member (band_id, artist_id) VALUES (10,20);
+
 -- Artist Genres
 INSERT INTO Artist_Genre (artist_id, genre, subgenre) VALUES (1, 'Rock', 'Alternative Rock');
 INSERT INTO Artist_Genre (artist_id, genre, subgenre) VALUES (2, 'Indie', NULL);
