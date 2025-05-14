@@ -22,5 +22,5 @@ FROM Staff s
 JOIN All_Possible_Combinations apc ON s.staff_id = apc.staff_id
 LEFT JOIN Assigned_Dates ad  
     ON apc.staff_id = ad.staff_id AND apc.event_date = ad.event_date
-WHERE ad.staff_id IS NULL
+WHERE ad.staff_id IS NULL AND apc.event_date = '2017-12-23'
 ORDER BY apc.event_date, apc.staff_id;
