@@ -1,0 +1,6 @@
+first_name,name,overall_score
+Visitor12,Artist20,5
+Visitor21,Artist11,5
+Visitor21,Artist31,5
+Visitor22,Artist23,5
+Visitor22,Artist3,5
