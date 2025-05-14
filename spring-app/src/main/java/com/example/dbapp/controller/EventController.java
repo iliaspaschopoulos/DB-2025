@@ -36,9 +36,9 @@ public class EventController {
     public ResponseEntity<Event> createEvent(@RequestBody Event event) {
         try {
             System.err.println("EventController.createEvent received event. Festival: " +
-                (event.getFestival() == null ? "null" : "ID=" + event.getFestival().getId()) +
+                (event.getFestival() == null ? "null" : "ID=" + event.getFestival().getFestivalId()) +
                 ", Scene: " +
-                (event.getScene() == null ? "null" : "ID=" + event.getScene().getId()) +
+                (event.getScene() == null ? "null" : "ID=" + event.getScene().getSceneId()) +
                 ", EventDate: " + event.getEventDate());
 
             Event createdEvent = eventService.saveEvent(event);
@@ -56,9 +56,9 @@ public class EventController {
     public ResponseEntity<Event> updateEvent(@PathVariable Integer id, @RequestBody Event eventDetails) {
         try {
             System.err.println("EventController.updateEvent for ID " + id + " received eventDetails. Festival: " +
-                (eventDetails.getFestival() == null ? "null" : (eventDetails.getFestival().getId() == null ? "ID is null" : "ID=" + eventDetails.getFestival().getId())) +
+                (eventDetails.getFestival() == null ? "null" : (eventDetails.getFestival().getFestivalId() == null ? "ID is null" : "ID=" + eventDetails.getFestival().getFestivalId())) +
                 ", Scene: " +
-                (eventDetails.getScene() == null ? "null" : (eventDetails.getScene().getId() == null ? "ID is null" : "ID=" + eventDetails.getScene().getId())) +
+                (eventDetails.getScene() == null ? "null" : (eventDetails.getScene().getSceneId() == null ? "ID is null" : "ID=" + eventDetails.getScene().getSceneId())) +
                 ", EventDate: " + eventDetails.getEventDate());
 
             Event updatedEvent = eventService.updateEvent(id, eventDetails);

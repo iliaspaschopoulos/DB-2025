@@ -2,6 +2,7 @@ package com.example.dbapp.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate; // Changed from java.util.Date
+import java.util.HashSet; // Added for genres
 import java.util.Set; // Added for artistGenres
 
 @Entity
@@ -30,6 +31,19 @@ public class Artist {
 
     @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY) 
     private Set<ArtistGenre> artistGenres; 
+
+    @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Performance> performances;
+
+    @OneToMany(mappedBy = "artist", fetch = FetchType.LAZY)
+    private Set<BandMember> bandMembers;
+
+    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<ArtistGenre> genres = new HashSet<>();
+
+    // Constructors
+    public Artist() {
+    }
 
     // Getters and Setters
     public Integer getArtistId() { 
@@ -86,5 +100,29 @@ public class Artist {
 
     public void setArtistGenres(Set<ArtistGenre> artistGenres) { 
         this.artistGenres = artistGenres;
+    }
+
+    public Set<Performance> getPerformances() {
+        return performances;
+    }
+
+    public void setPerformances(Set<Performance> performances) {
+        this.performances = performances;
+    }
+
+    public Set<BandMember> getBandMembers() {
+        return bandMembers;
+    }
+
+    public void setBandMembers(Set<BandMember> bandMembers) {
+        this.bandMembers = bandMembers;
+    }
+
+    public Set<ArtistGenre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(Set<ArtistGenre> genres) {
+        this.genres = genres;
     }
 }

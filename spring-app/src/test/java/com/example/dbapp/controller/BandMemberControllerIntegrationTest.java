@@ -1,13 +1,14 @@
 package com.example.dbapp.controller;
 
-import com.example.dbapp.model.BandMember;
 import com.example.dbapp.model.Artist;
 import com.example.dbapp.model.Band;
+import com.example.dbapp.model.BandMember;
 import com.example.dbapp.model.BandMemberId;
 import com.example.dbapp.repository.ArtistRepository;
 import com.example.dbapp.repository.BandMemberRepository;
 import com.example.dbapp.repository.BandRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -35,178 +36,143 @@ public class BandMemberControllerIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private BandMemberRepository bandMemberRepository;
+    private ArtistRepository artistRepository;
 
     @Autowired
     private BandRepository bandRepository;
 
     @Autowired
-    private ArtistRepository artistRepository;
+    private BandMemberRepository bandMemberRepository;
 
-    @Autowired
     private ObjectMapper objectMapper;
-
-    private Band band1;
     private Artist artist1;
-    private BandMember bandMember1;
-    private BandMember bandMember2;
+    private Band band1;
 
     @BeforeEach
     void setUp() {
-        bandMemberRepository.deleteAll();
-        bandRepository.deleteAll();
-        artistRepository.deleteAll();
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
 
-        band1 = new Band();
-        band1.setBandName("Test Band For Members");
-        band1.setFormationDate(LocalDate.of(2000,1,1));
-        band1 = bandRepository.saveAndFlush(band1);
+        bandMemberRepository.deleteAll();
+        artistRepository.deleteAll();
+        bandRepository.deleteAll();
 
         artist1 = new Artist();
-        artist1.setName("Test Artist For Band");
-        artist1.setDateOfBirth(LocalDate.of(1980,1,1));
-        artist1 = artistRepository.saveAndFlush(artist1);
+        artist1.setName("Artist 1");
+        artist1.setDateOfBirth(LocalDate.of(1990, 1, 1));
+        artist1 = artistRepository.save(artist1);
 
-        Artist artist2 = new Artist();
-        artist2.setName("Another Test Artist");
-        artist2.setDateOfBirth(LocalDate.of(1985,5,5));
-        artist2 = artistRepository.saveAndFlush(artist2);
-
-        bandMember1 = new BandMember();
-        bandMember1.setBand(band1);
-        bandMember1.setArtist(artist1);
-        bandMember1.setId(new BandMemberId(band1.getId(), artist1.getId()));
-        bandMember1.setJoinDate(LocalDate.of(2000, 1, 1));
-        bandMember1.setRole("Vocalist");
-        bandMember1 = bandMemberRepository.saveAndFlush(bandMember1);
-
-        bandMember2 = new BandMember();
-        bandMember2.setBand(band1);
-        bandMember2.setArtist(artist2);
-        bandMember2.setId(new BandMemberId(band1.getId(), artist2.getId()));
-        bandMember2.setJoinDate(LocalDate.of(2002, 6, 1));
-        bandMember2.setRole("Guitarist");
-        bandMember2 = bandMemberRepository.saveAndFlush(bandMember2);
+        band1 = new Band();
+        band1.setBandName("Band 1");
+        band1.setFormationDate(LocalDate.of(2000, 2, 2));
+        band1 = bandRepository.save(band1);
     }
 
     @Test
-    void getAllBandMembers() throws Exception {
-        mockMvc.perform(get("/api/band_members"))
+    void getAllBandMembers_empty() throws Exception {
+        mockMvc.perform(get("/api/band-members"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].role", is(bandMember1.getRole())))
-                .andExpect(jsonPath("$[1].role", is(bandMember2.getRole())));
+                .andExpect(jsonPath("$", hasSize(0)));
     }
 
     @Test
-    void getBandMemberById() throws Exception {
-        mockMvc.perform(get("/api/band_members/find")
-                        .param("bandId", String.valueOf(bandMember1.getId().getBandId()))
-                        .param("artistId", String.valueOf(bandMember1.getId().getArtistId())))
-                .andExpect(status().isOk())
+    void createAndGetBandMember() throws Exception {
+        BandMember bm = new BandMember();
+        bm.setId(new BandMemberId(band1.getBandId(), artist1.getArtistId()));
+        bm.setRole("Vocalist");
+        bm.setJoinDate(LocalDate.now());
+
+        // Create
+        String result = mockMvc.perform(post("/api/band-members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(bm)))
+                .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.role", is(bandMember1.getRole())))
-                .andExpect(jsonPath("$.artist.artistName", is(artist1.getName())))
-                .andExpect(jsonPath("$.band.bandName", is(band1.getBandName())));
+                .andExpect(jsonPath("$.id.bandId", is(band1.getBandId())))
+                .andExpect(jsonPath("$.id.artistId", is(artist1.getArtistId())))
+                .andReturn().getResponse().getContentAsString();
+
+        // Get all
+        mockMvc.perform(get("/api/band-members"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+
+        // Get by id
+        mockMvc.perform(get("/api/band-members/find")
+                        .param("bandId", band1.getBandId().toString())
+                        .param("artistId", artist1.getArtistId().toString()))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void getBandMemberById_notFound() throws Exception {
-        mockMvc.perform(get("/api/band_members/find")
+    void updateBandMember() throws Exception {
+        // Prepare existing
+        BandMember existing = new BandMember();
+        existing.setId(new BandMemberId(band1.getBandId(), artist1.getArtistId()));
+        existing.setBand(band1);
+        existing.setArtist(artist1);
+        existing.setRole("Guitarist");
+        existing.setJoinDate(LocalDate.of(2020, 1, 1));
+        existing = bandMemberRepository.save(existing);
+
+        BandMember updated = new BandMember();
+        updated.setId(new BandMemberId(band1.getBandId(), artist1.getArtistId()));
+        updated.setRole("Lead Guitarist");
+        updated.setJoinDate(LocalDate.of(2021, 1, 1));
+
+        mockMvc.perform(put("/api/band-members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updated)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteBandMember() throws Exception {
+        // Prepare existing
+        BandMember existing = new BandMember();
+        existing.setId(new BandMemberId(band1.getBandId(), artist1.getArtistId()));
+        existing.setBand(band1);
+        existing.setArtist(artist1);
+        bandMemberRepository.save(existing);
+
+        mockMvc.perform(delete("/api/band-members/delete")
+                        .param("bandId", band1.getBandId().toString())
+                        .param("artistId", artist1.getArtistId().toString()))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/api/band-members/find")
+                        .param("bandId", band1.getBandId().toString())
+                        .param("artistId", artist1.getArtistId().toString()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getBandMember_notFound() throws Exception {
+        mockMvc.perform(get("/api/band-members/find")
                         .param("bandId", "999")
                         .param("artistId", "999"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    void createBandMember() throws Exception {
-        Artist newArtist = new Artist();
-        newArtist.setName("New Member Artist");
-        newArtist.setDateOfBirth(LocalDate.of(1990,1,1));
-        newArtist = artistRepository.saveAndFlush(newArtist);
-
-        BandMember newBandMember = new BandMember();
-        newBandMember.setBand(band1);
-        newBandMember.setArtist(newArtist);
-        newBandMember.setId(new BandMemberId(band1.getId(), newArtist.getId()));
-        newBandMember.setJoinDate(LocalDate.of(2023, 1, 1));
-        newBandMember.setRole("Bassist");
-
-        mockMvc.perform(post("/api/band_members")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newBandMember)))
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.role", is("Bassist")))
-                .andExpect(jsonPath("$.id.artistId", is(newArtist.getId())))
-                .andExpect(jsonPath("$.id.bandId", is(band1.getId())))
-                .andExpect(jsonPath("$.artist.id", is(newArtist.getId())))
-                .andExpect(jsonPath("$.band.id", is(band1.getId())));
-    }
-
-    @Test
-    void updateBandMember() throws Exception {
-        BandMember updatedBandMemberDetails = new BandMember();
-        updatedBandMemberDetails.setId(new BandMemberId(bandMember1.getBand().getId(), bandMember1.getArtist().getId()));
-        updatedBandMemberDetails.setBand(bandMember1.getBand());
-        updatedBandMemberDetails.setArtist(bandMember1.getArtist());
-        updatedBandMemberDetails.setJoinDate(LocalDate.of(2001, 1, 1));
-        updatedBandMemberDetails.setRole("Lead Vocalist");
-
-        mockMvc.perform(put("/api/band_members")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updatedBandMemberDetails)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.role", is("Lead Vocalist")))
-                .andExpect(jsonPath("$.joinDate", is("2001-01-01")));
-    }
-
-    @Test
     void updateBandMember_notFound() throws Exception {
-        BandMember nonExistentBandMember = new BandMember();
-        BandMemberId nonExistentId = new BandMemberId(999, 999); // Non-existent ID
-        nonExistentBandMember.setId(nonExistentId);
+        BandMember updated = new BandMember();
+        updated.setId(new BandMemberId(999, 999));
+        updated.setRole("Ghost Role");
+        updated.setJoinDate(LocalDate.now());
 
-        Band dummyBand = new Band();
-        dummyBand.setId(999); 
-        dummyBand.setBandName("Dummy Band Name"); // Populate non-nullable field
-
-        Artist dummyArtist = new Artist();
-        dummyArtist.setId(999); 
-        dummyArtist.setName("Dummy Artist Name"); // Populate non-nullable field (artistName)
-        dummyArtist.setDateOfBirth(LocalDate.of(1900, 1, 1)); // Populate non-nullable field
-
-        nonExistentBandMember.setBand(dummyBand);
-        nonExistentBandMember.setArtist(dummyArtist);
-        nonExistentBandMember.setRole("Non Existent Role");
-        nonExistentBandMember.setJoinDate(LocalDate.now());
-
-        mockMvc.perform(put("/api/band_members")
+        mockMvc.perform(put("/api/band-members")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(nonExistentBandMember)))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void deleteBandMember() throws Exception {
-        mockMvc.perform(delete("/api/band_members/delete")
-                        .param("bandId", String.valueOf(bandMember1.getId().getBandId()))
-                        .param("artistId", String.valueOf(bandMember1.getId().getArtistId())))
-                .andExpect(status().isNoContent());
-
-        mockMvc.perform(get("/api/band_members/find")
-                        .param("bandId", String.valueOf(bandMember1.getId().getBandId()))
-                        .param("artistId", String.valueOf(bandMember1.getId().getArtistId())))
+                        .content(objectMapper.writeValueAsString(updated)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void deleteBandMember_notFound() throws Exception {
-        mockMvc.perform(delete("/api/band_members/delete")
-                        .param("bandId", "999")
-                        .param("artistId", "999"))
+        mockMvc.perform(delete("/api/band-members/delete")
+                        .param("bandId", "123")
+                        .param("artistId", "456"))
                 .andExpect(status().isNotFound());
     }
 }

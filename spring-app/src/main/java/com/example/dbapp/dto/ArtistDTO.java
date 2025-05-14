@@ -10,7 +10,7 @@ import com.example.dbapp.model.ArtistGenre; // Assuming ArtistGenre has a simple
 public class ArtistDTO {
 
     private Integer artistId;
-    private String artistName;
+    private String name;
     private String stageName;
     private LocalDate dateOfBirth;
     private String website;
@@ -22,8 +22,8 @@ public class ArtistDTO {
     }
 
     public ArtistDTO(Artist artist) {
-        this.artistId = artist.getArtistId(); // Changed from getId() to getArtistId()
-        this.artistName = artist.getName();
+        this.artistId = artist.getArtistId();
+        this.name = artist.getName();
         this.stageName = artist.getStageName();
         this.dateOfBirth = artist.getDateOfBirth();
         this.website = artist.getWebsite();
@@ -47,12 +47,12 @@ public class ArtistDTO {
         this.artistId = artistId;
     }
 
-    public String getArtistName() {
-        return artistName;
+    public String getName() {
+        return name;
     }
 
-    public void setArtistName(String artistName) {
-        this.artistName = artistName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getStageName() {

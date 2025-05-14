@@ -77,6 +77,6 @@ The React app will open at http://localhost:3000.
 ## How It Works
 1. **Home Page** (`/`): Lists available tables.
 2. **Artists Page** (`/artists`): Full CRUD UI for the `Artist` table.
-3. **Bands Page** (`/bands`): Full CRUD UI for the `Band` table (coming soon).
+3. **Bands Page** (`/bands`): Full CRUD UI for the `Band` table.
 
 Feel free to extend additional controllers, integration tests, and frontend pages for other tables following the patterns provided.

@@ -1,24 +1,36 @@
 package com.example.dbapp.controller;
 
+import com.example.dbapp.model.Band;
+import com.example.dbapp.model.Artist;
 import com.example.dbapp.model.BandMember;
 import com.example.dbapp.model.BandMemberId;
 import com.example.dbapp.service.BandMemberService;
+import com.example.dbapp.repository.BandRepository;
+import com.example.dbapp.repository.ArtistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/band_members") // Changed from "/api/bandmembers"
+@RequestMapping("/api/band-members")
 public class BandMemberController {
 
     private final BandMemberService bandMemberService;
+    private final BandRepository bandRepository;
+    private final ArtistRepository artistRepository;
 
     @Autowired
-    public BandMemberController(BandMemberService bandMemberService) {
+    public BandMemberController(BandMemberService bandMemberService,
+                                BandRepository bandRepository,
+                                ArtistRepository artistRepository) {
         this.bandMemberService = bandMemberService;
+        this.bandRepository = bandRepository;
+        this.artistRepository = artistRepository;
     }
 
     @GetMapping
@@ -26,7 +38,7 @@ public class BandMemberController {
         return bandMemberService.getAllBandMembers();
     }
 
-    @GetMapping("/find") // Example: /api/band_members/find?bandId=1&artistId=1
+    @GetMapping(path = "/find")
     public ResponseEntity<BandMember> getBandMemberById(@RequestParam Integer bandId, @RequestParam Integer artistId) {
         BandMemberId id = new BandMemberId(bandId, artistId);
         return bandMemberService.getBandMemberById(id)
@@ -35,58 +47,64 @@ public class BandMemberController {
     }
 
     @PostMapping
-    public ResponseEntity<BandMember> createBandMember(@RequestBody BandMember bandMember) {
-        if (bandMember.getBand() != null && bandMember.getArtist() != null && bandMember.getId() == null) {
-            bandMember.setId(new BandMemberId(bandMember.getBand().getId(), bandMember.getArtist().getId()));
-        } else if (bandMember.getId() != null && bandMember.getBand() != null && bandMember.getId().getBandId() == null) {
-            bandMember.getId().setBandId(bandMember.getBand().getId());
-        } else if (bandMember.getId() != null && bandMember.getArtist() != null && bandMember.getId().getArtistId() == null) {
-            bandMember.getId().setArtistId(bandMember.getArtist().getId());
-        }
-        BandMember savedBandMember = bandMemberService.saveBandMember(bandMember);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedBandMember);
-    }
+    public ResponseEntity<?> createBandMember(@RequestBody BandMember bandMember) {
+        BandMemberId id = bandMember.getId();
 
-    @PutMapping
-    public ResponseEntity<BandMember> updateBandMember(@RequestBody BandMember bandMemberDetails) {
-        BandMemberId id = bandMemberDetails.getId();
         if (id == null || id.getBandId() == null || id.getArtistId() == null) {
-            return ResponseEntity.badRequest().build(); // ID must be present and complete
-        }
-
-        // Explicitly check if BandMember exists BEFORE calling the main update service method
-        if (!bandMemberService.getBandMemberById(id).isPresent()) {
-            return ResponseEntity.notFound().build(); // Return 404 early if BandMember itself not found
-        }
-
-        if (bandMemberDetails.getBand() != null && bandMemberDetails.getBand().getId() != null && !bandMemberDetails.getBand().getId().equals(id.getBandId())) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (bandMemberDetails.getArtist() != null && bandMemberDetails.getArtist().getId() != null && !bandMemberDetails.getArtist().getId().equals(id.getArtistId())) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("BandMember ID (bandId, artistId) must be provided in the 'id' field.");
         }
 
         try {
-            BandMember updatedBandMember = bandMemberService.updateBandMember(id, bandMemberDetails);
-            if (updatedBandMember == null) {
-                // This can happen if the service's update logic itself determines a "not found"
-                // or failure condition resulting in null, even after initial existence check.
-                return ResponseEntity.notFound().build();
+            if (bandMember.getBand() == null) {
+                Band band = bandRepository.findById(id.getBandId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Band not found with ID: " + id.getBandId()));
+                bandMember.setBand(band);
             }
-            return ResponseEntity.ok(updatedBandMember);
-        } catch (RuntimeException e) {
-            // Catch other runtime exceptions from the service during the update.
-            return ResponseEntity.notFound().build();
+            if (bandMember.getArtist() == null) {
+                Artist artist = artistRepository.findById(id.getArtistId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Artist not found with ID: " + id.getArtistId()));
+                bandMember.setArtist(artist);
+            }
+
+            bandMember.getId().setBandId(bandMember.getBand().getBandId());
+            bandMember.getId().setArtistId(bandMember.getArtist().getArtistId());
+
+            BandMember saved = bandMemberService.saveBandMember(bandMember);
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
         }
     }
 
-    @DeleteMapping("/delete") // Example: /api/band_members/delete?bandId=1&artistId=1
+    @PutMapping
+    public ResponseEntity<?> updateBandMember(@RequestBody BandMember bandMemberDetails) {
+        BandMemberId id = bandMemberDetails.getId();
+        if (id == null || id.getBandId() == null || id.getArtistId() == null) {
+            return ResponseEntity.badRequest().body("BandMember ID (bandId, artistId) must be provided in the 'id' field for update.");
+        }
+
+        try {
+            BandMember updated = bandMemberService.updateBandMember(id, bandMemberDetails);
+            return ResponseEntity.ok(updated);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        } catch (RuntimeException e) {
+            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("not found")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping(path = "/delete")
     public ResponseEntity<Void> deleteBandMember(@RequestParam Integer bandId, @RequestParam Integer artistId) {
         BandMemberId id = new BandMemberId(bandId, artistId);
-        if (bandMemberService.getBandMemberById(id).isPresent()) {
+        try {
             bandMemberService.deleteBandMember(id);
             return ResponseEntity.noContent().build();
-        } else {
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }

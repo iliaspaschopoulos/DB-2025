@@ -1,7 +1,7 @@
 package com.example.dbapp.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType; // Added import
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -9,16 +9,16 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient; // Import for @Transient
+import jakarta.persistence.Transient;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
 import java.time.LocalTime;
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo; // Added
-import com.fasterxml.jackson.annotation.ObjectIdGenerators; // Added
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id") // Added
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "Performance",
        uniqueConstraints = {
            // CONSTRAINT chk_performance_artist_or_band CHECK (
@@ -34,37 +34,34 @@ public class Performance {
     @Column(name = "performance_id")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Changed to LAZY
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    @ManyToOne
-    @JoinColumn(name = "artist_id") // Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "artist_id", nullable = true)
     private Artist artist;
 
-    @ManyToOne
-    @JoinColumn(name = "band_id") // Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "band_id", nullable = true)
     private Band band;
 
     @Column(name = "performance_type", length = 50)
-    // CHECK (performance_type IN ('warm up','headline','Special guest')) -> DB constraint
     private String performanceType;
 
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
 
     @Column(name = "duration", nullable = false)
-    // CHECK (DATEDIFF(MINUTE, '00:00:00', duration) <= 180) -> DB constraint
-    private LocalTime duration; // Representing TIME as LocalTime. Duration logic might need custom handling.
+    private LocalTime duration;
 
     @Column(name = "break_duration")
-    // CHECK (DATEDIFF(MINUTE, '00:05:00', break_duration) BETWEEN 0 AND 25) -> DB constraint
     private LocalTime breakDuration;
 
-    @Transient // Not a DB column, calculated or temporary
+    @Transient
     private LocalTime endTime;
 
-    @Transient // Not a DB column
+    @Transient
     private Boolean contractSigned;
 
     @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -145,7 +142,7 @@ public class Performance {
                                 .plusMinutes(this.duration.getMinute())
                                 .plusSeconds(this.duration.getSecond());
         }
-        return endTime; // Return the transient field if set directly, or null
+        return endTime;
     }
 
     public void setEndTime(LocalTime endTime) {

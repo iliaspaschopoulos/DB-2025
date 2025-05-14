@@ -43,13 +43,12 @@ public class EventService {
             throw new IllegalArgumentException("Event date is required.");
         }
 
+        // Correctly get Festival ID
         final Integer festivalIdToUse;
-        if (event.getFestival() != null && event.getFestival().getId() != null) {
-            festivalIdToUse = event.getFestival().getId();
-        } else if (event.getFestivalId() != null) {
-            festivalIdToUse = event.getFestivalId();
+        if (event.getFestival() != null && event.getFestival().getFestivalId() != null) {
+            festivalIdToUse = event.getFestival().getFestivalId();
         } else {
-            festivalIdToUse = null;
+            festivalIdToUse = null; // Ensure festivalIdToUse is initialized in all paths
         }
 
         if (festivalIdToUse == null) {
@@ -59,13 +58,12 @@ public class EventService {
                 .orElseThrow(() -> new RuntimeException("Festival not found with id " + festivalIdToUse + " when creating event."));
         event.setFestival(festival);
 
+        // Correctly get Scene ID
         final Integer sceneIdToUse;
-        if (event.getScene() != null && event.getScene().getId() != null) {
-            sceneIdToUse = event.getScene().getId();
-        } else if (event.getSceneId() != null) {
-            sceneIdToUse = event.getSceneId();
+        if (event.getScene() != null && event.getScene().getSceneId() != null) {
+            sceneIdToUse = event.getScene().getSceneId();
         } else {
-            sceneIdToUse = null;
+            sceneIdToUse = null; // Ensure sceneIdToUse is initialized in all paths
         }
 
         if (sceneIdToUse == null) {
@@ -87,37 +85,35 @@ public class EventService {
             event.setEventDate(eventDetails.getEventDate());
         }
 
-        final Integer festivalIdToUse;
-        if (eventDetails.getFestival() != null && eventDetails.getFestival().getId() != null) {
-            festivalIdToUse = eventDetails.getFestival().getId();
-        } else if (eventDetails.getFestivalId() != null) {
-            festivalIdToUse = eventDetails.getFestivalId();
+        // Correctly get Festival ID from eventDetails
+        final Integer festivalIdToUpdate;
+        if (eventDetails.getFestival() != null && eventDetails.getFestival().getFestivalId() != null) {
+            festivalIdToUpdate = eventDetails.getFestival().getFestivalId();
         } else {
-            festivalIdToUse = null;
+            festivalIdToUpdate = null; // Ensure festivalIdToUpdate is initialized
         }
 
-        if (festivalIdToUse != null) {
-            Festival festival = festivalRepository.findById(festivalIdToUse)
-                    .orElseThrow(() -> new RuntimeException("Festival not found with id " + festivalIdToUse));
+        if (festivalIdToUpdate != null) {
+            Festival festival = festivalRepository.findById(festivalIdToUpdate)
+                    .orElseThrow(() -> new RuntimeException("Festival not found with id " + festivalIdToUpdate));
             event.setFestival(festival);
-        } else if (eventDetails.getFestival() != null && eventDetails.getFestivalId() == null) { // If festival object is present but ID is null, and festivalId field is also null
+        } else if (eventDetails.getFestival() != null && (eventDetails.getFestival().getFestivalId() == null)) {
             throw new IllegalArgumentException("Festival ID must be provided if festival object is present in update.");
         }
 
-        final Integer sceneIdToUse;
-        if (eventDetails.getScene() != null && eventDetails.getScene().getId() != null) {
-            sceneIdToUse = eventDetails.getScene().getId();
-        } else if (eventDetails.getSceneId() != null) {
-            sceneIdToUse = eventDetails.getSceneId();
+        // Correctly get Scene ID from eventDetails
+        final Integer sceneIdToUpdate;
+        if (eventDetails.getScene() != null && eventDetails.getScene().getSceneId() != null) {
+            sceneIdToUpdate = eventDetails.getScene().getSceneId();
         } else {
-            sceneIdToUse = null;
+            sceneIdToUpdate = null; // Ensure sceneIdToUpdate is initialized
         }
 
-        if (sceneIdToUse != null) {
-            Scene scene = sceneRepository.findById(sceneIdToUse)
-                    .orElseThrow(() -> new RuntimeException("Scene not found with id " + sceneIdToUse));
+        if (sceneIdToUpdate != null) {
+            Scene scene = sceneRepository.findById(sceneIdToUpdate)
+                    .orElseThrow(() -> new RuntimeException("Scene not found with id " + sceneIdToUpdate));
             event.setScene(scene);
-        } else if (eventDetails.getScene() != null && eventDetails.getSceneId() == null) { // If scene object is present but ID is null, and sceneId field is also null
+        } else if (eventDetails.getScene() != null && (eventDetails.getScene().getSceneId() == null)) {
             throw new IllegalArgumentException("Scene ID must be provided if scene object is present in update.");
         }
 

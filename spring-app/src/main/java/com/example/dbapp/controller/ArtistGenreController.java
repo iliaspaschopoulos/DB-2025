@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/artist_genres") // Changed from "/api/artistgenres"
+@RequestMapping("/api/artist-genres")
 public class ArtistGenreController {
 
     private final ArtistGenreService artistGenreService;
@@ -26,50 +28,57 @@ public class ArtistGenreController {
         return artistGenreService.getAllArtistGenres();
     }
 
-    @GetMapping("/find") // Example: /api/artist_genres/find?artistId=1&genreName=Rock
-    public ResponseEntity<ArtistGenre> getArtistGenreById(@RequestParam Integer artistId, @RequestParam String genreName) {
-        ArtistGenreId id = new ArtistGenreId(artistId, genreName);
-        return artistGenreService.getArtistGenreById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/find")
+    public ResponseEntity<?> getArtistGenreById(@RequestParam Integer artistId, @RequestParam String genre) {
+        try {
+            ArtistGenreId id = new ArtistGenreId(artistId, genre);
+            return artistGenreService.getArtistGenreById(id)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (ResponseStatusException e) { 
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        }
     }
 
     @PostMapping
-    public ResponseEntity<ArtistGenre> createArtistGenre(@RequestBody ArtistGenre artistGenre) {
-        if (artistGenre.getArtist() != null && artistGenre.getId() != null && artistGenre.getId().getArtistId() == null) {
-            artistGenre.getId().setArtistId(artistGenre.getArtist().getId());
+    public ResponseEntity<?> createArtistGenre(@RequestBody ArtistGenre artistGenre) {
+        try {
+            // Payload must include artistGenre.id.artistId and artistGenre.id.genre
+            if (artistGenre.getId() == null || artistGenre.getId().getArtistId() == null || artistGenre.getId().getGenre() == null || artistGenre.getId().getGenre().trim().isEmpty()) {
+                 return ResponseEntity.badRequest().body("Request body must include 'id' with 'artistId' and 'genre'.");
+            }
+            ArtistGenre savedArtistGenre = artistGenreService.saveArtistGenre(artistGenre);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedArtistGenre);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        } catch (Exception e) { 
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
         }
-        ArtistGenre savedArtistGenre = artistGenreService.saveArtistGenre(artistGenre);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedArtistGenre);
     }
 
-    @PutMapping
-    public ResponseEntity<ArtistGenre> updateArtistGenre(@RequestBody ArtistGenre artistGenre) {
-        ArtistGenreId id = artistGenre.getId();
-        if (id == null || id.getArtistId() == null || id.getGenre() == null) {
-            return ResponseEntity.badRequest().build();
+    @PutMapping("/update")
+    public ResponseEntity<?> updateArtistGenre(@RequestParam Integer artistId, @RequestParam String genre, @RequestBody ArtistGenre artistGenreDetails) {
+        try {
+            ArtistGenreId id = new ArtistGenreId(artistId, genre);
+            ArtistGenre updatedArtistGenre = artistGenreService.updateArtistGenre(id, artistGenreDetails);
+            return ResponseEntity.ok(updatedArtistGenre);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
         }
-        if (artistGenre.getArtist() != null && !artistGenre.getArtist().getId().equals(id.getArtistId())) {
-            return ResponseEntity.badRequest().body(null);
-        }
-
-        return artistGenreService.getArtistGenreById(id)
-                .map(existingArtistGenre -> {
-                    existingArtistGenre.setSubgenre(artistGenre.getSubgenre());
-                    ArtistGenre updatedArtistGenre = artistGenreService.saveArtistGenre(existingArtistGenre);
-                    return ResponseEntity.ok(updatedArtistGenre);
-                })
-                .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/delete") // Example: /api/artist_genres/delete?artistId=1&genreName=Rock
-    public ResponseEntity<Void> deleteArtistGenre(@RequestParam Integer artistId, @RequestParam String genreName) {
-        ArtistGenreId id = new ArtistGenreId(artistId, genreName);
-        if (artistGenreService.getArtistGenreById(id).isPresent()) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteArtistGenre(@RequestParam Integer artistId, @RequestParam String genre) {
+        try {
+            ArtistGenreId id = new ArtistGenreId(artistId, genre);
             artistGenreService.deleteArtistGenre(id);
             return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
+        } catch (ResponseStatusException e) { 
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

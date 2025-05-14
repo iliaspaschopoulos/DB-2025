@@ -12,7 +12,7 @@ public class Festival {
     @Column(name = "festival_id")
     private Integer festivalId;
 
-    @Column(name = "year", nullable = false)
+    @Column(name = "\"year\"", nullable = false)
     private Integer year;
 
     @Column(name = "start_date", nullable = false)

@@ -397,6 +397,17 @@ with open('load.sql', 'w', encoding='utf-8') as f:
     else:
         f.write("-- No tickets available to generate resale queue entries.\n")
 
+    # Band Member Data
+    f.write('\n-- Band_Member Data -- Corrected to include role and join_date\n')
+    roles = ['Vocalist', 'Guitarist', 'Bassist', 'Drummer', 'Keyboardist']
+    for i in range(1, 21): # Assuming 20 band members for 10 bands, 40 artists
+        band_id = (i - 1) % 10 + 1
+        artist_id = i # Assign first 20 artists to bands
+        member_role = random.choice(roles)
+        # Join date can be after band formation and artist DOB, for simplicity, a random recent date
+        join_date_val = random_date(datetime(2010, 1, 1), datetime(2023, 12, 31))
+        f.write(f"INSERT INTO Band_Member (band_id, artist_id, role, join_date) VALUES ({band_id}, {artist_id}, '{member_role}', '{join_date_val}');\n")
+
     f.write('\n-- End of bulk data generation.\n')
 
 print("load.sql generated successfully.")

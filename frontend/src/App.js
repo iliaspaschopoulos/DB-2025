@@ -3,6 +3,9 @@ import axios from 'axios';
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './Home';
+import Bands from './Bands';
+import BandMembers from './BandMembers';
+import Navbar from './Navbar';
 
 function App() {
   const [artists, setArtists] = useState([]);
@@ -143,9 +146,12 @@ function App() {
 function AppRoutes() {
   return (
     <BrowserRouter>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/artists" element={<App />} />
+        <Route path="/bands" element={<Bands />} />
+        <Route path="/band-members" element={<BandMembers />} />
       </Routes>
     </BrowserRouter>
   );

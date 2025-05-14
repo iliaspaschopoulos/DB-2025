@@ -1,24 +1,28 @@
 package com.example.dbapp.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
 public class ArtistGenreId implements Serializable {
+    private static final long serialVersionUID = 1L;
 
+    @Column(name = "artist_id")
     private Integer artistId;
+
+    @Column(name = "genre")
     private String genre;
 
-    // Constructors
-    public ArtistGenreId() {}
+    public ArtistGenreId() {
+    }
 
     public ArtistGenreId(Integer artistId, String genre) {
         this.artistId = artistId;
         this.genre = genre;
     }
 
-    // Getters and Setters
     public Integer getArtistId() {
         return artistId;
     }
@@ -35,7 +39,6 @@ public class ArtistGenreId implements Serializable {
         this.genre = genre;
     }
 
-    // hashCode and equals
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

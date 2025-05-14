@@ -7,10 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/artists")
 public class ArtistController {
@@ -32,10 +37,15 @@ public class ArtistController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ArtistDTO createArtist(@RequestBody Artist artist) {
-        Artist createdArtist = artistService.createOrUpdateArtist(artist);
-        return new ArtistDTO(createdArtist);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ArtistDTO> createArtist(@RequestBody Artist artist) {
+        Artist created = artistService.createOrUpdateArtist(artist);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(created.getArtistId())
+                .toUri();
+        return ResponseEntity.created(location)
+                .body(new ArtistDTO(created));
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)

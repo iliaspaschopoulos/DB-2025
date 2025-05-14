@@ -34,8 +34,8 @@ public class SceneService {
         Scene scene = sceneRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Scene not found with id " + id));
 
-        scene.setSceneName(sceneDetails.getSceneName());
-        scene.setCapacity(sceneDetails.getCapacity());
+        scene.setName(sceneDetails.getName()); // Corrected from getSceneName()
+        scene.setMaxCapacity(sceneDetails.getMaxCapacity()); // Corrected from getCapacity()
         // scene.setEvents(sceneDetails.getEvents()); // Managed separately
         return sceneRepository.save(scene);
     }
