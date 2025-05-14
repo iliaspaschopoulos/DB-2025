@@ -1,0 +1,23 @@
+genre,artist_id,name,event_date
+Classical,13,Artist13,2025-03-27
+Classical,3,Artist3,2025-06-01
+Classical,3,Artist3,2025-03-30
+Classical,4,Artist4,2025-09-20
+Electronic,3,Artist3,2025-06-01
+Electronic,3,Artist3,2025-03-30
+Electronic,8,Artist8,2025-03-19
+Folk,26,Artist26,2025-03-27
+Folk,27,Artist27,2025-03-30
+Folk,34,Artist34,2025-06-03
+Folk,34,Artist34,2025-06-04
+Hip Hop,27,Artist27,2025-03-30
+Indie,16,Artist16,2025-03-19
+Jazz,4,Artist4,2025-09-20
+Jazz,8,Artist8,2025-03-19
+Metal,17,Artist17,2025-09-20
+Pop,17,Artist17,2025-09-20
+Pop,34,Artist34,2025-06-04
+Pop,34,Artist34,2025-06-03
+Reggae,27,Artist27,2025-03-30
+Rock,13,Artist13,2025-03-27
+Rock,4,Artist4,2025-09-20
