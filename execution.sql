@@ -1,7 +1,0 @@
-SET SHOWPLAN_ALL ON;
-GO
-
--- your query here
-
-SET SHOWPLAN_ALL OFF;
-GO
