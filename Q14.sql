@@ -2,7 +2,7 @@ WITH GenreYearCount AS (
     SELECT
         ag.genre,
         f.year,
-        COUNT(DISTINCT p.performance_id) AS appearances
+        COUNT(p.performance_id) AS appearances
     FROM Performance p
     JOIN Artist a ON p.artist_id = a.artist_id
     JOIN Artist_Genre ag ON a.artist_id = ag.artist_id
