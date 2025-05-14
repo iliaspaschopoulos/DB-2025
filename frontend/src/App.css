@@ -1,0 +1,61 @@
+.App {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+}
+.artist-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.artist-form input {
+  flex: 1 1 150px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.artist-form button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #007bff;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.artist-form button:hover {
+  background: #0056b3;
+}
+.artist-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.artist-table th,
+.artist-table td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: left;
+}
+.artist-table th {
+  background: #f4f4f4;
+}
+.artist-table a {
+  color: #007bff;
+  text-decoration: none;
+}
+.artist-table button {
+  margin-right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background: #28a745;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.artist-table button:last-child {
+  background: #dc3545;
+}
+.artist-table button:hover {
+  opacity: 0.9;
+}
