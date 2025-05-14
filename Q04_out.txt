@@ -1,0 +1,2 @@
+artist_id,name,average_rating,overall_score
+3,Artist3,3.500000,5
