@@ -1,1 +1,6 @@
+artist_id,name,distinct_continents
+3,Artist3,3
+4,Artist4,5
+16,Artist16,3
+27,Artist27,3
 
