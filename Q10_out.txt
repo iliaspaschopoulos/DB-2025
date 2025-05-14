@@ -1,0 +1,4 @@
+genre1,genre2,festivals_count
+Classical,Rock,6
+Jazz,Rock,6
+Folk,Hip Hop,5
