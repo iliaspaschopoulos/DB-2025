@@ -1,0 +1,6 @@
+artist_id,name,festival_count
+27,Artist27,3
+9,Artist9,2
+25,Artist25,2
+26,Artist26,2
+37,Artist37,2
