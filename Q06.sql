@@ -9,7 +9,7 @@ FROM Ticket t
 JOIN Event e ON t.event_id = e.event_id
 JOIN Performance p ON p.event_id = e.event_id
 LEFT JOIN Rating r ON r.performance_id = p.performance_id AND r.visitor_id = t.visitor_id
-WHERE t.visitor_id = 1
+WHERE t.visitor_id = 12
 GROUP BY p.performance_id;
 GO
 SET SHOWPLAN_ALL OFF;
@@ -35,7 +35,7 @@ FROM Ticket t
 JOIN Event e ON t.event_id = e.event_id
 JOIN Performance p ON p.event_id = e.event_id
 LEFT JOIN Rating r ON r.performance_id = p.performance_id AND r.visitor_id = t.visitor_id
-WHERE t.visitor_id = 1
+WHERE t.visitor_id = 12
 GROUP BY p.performance_id
 OPTION (LOOP JOIN);
 GO
@@ -62,7 +62,7 @@ FROM Ticket t
 JOIN Event e ON t.event_id = e.event_id
 JOIN Performance p ON p.event_id = e.event_id
 LEFT JOIN Rating r ON r.performance_id = p.performance_id AND r.visitor_id = t.visitor_id
-WHERE t.visitor_id = 1
+WHERE t.visitor_id = 12
 GROUP BY p.performance_id
 OPTION (HASH JOIN);
 GO
@@ -89,7 +89,7 @@ FROM Ticket t
 JOIN Event e ON t.event_id = e.event_id
 JOIN Performance p ON p.event_id = e.event_id
 LEFT JOIN Rating r ON r.performance_id = p.performance_id AND r.visitor_id = t.visitor_id
-WHERE t.visitor_id = 1
+WHERE t.visitor_id = 12
 GROUP BY p.performance_id
 OPTION (MERGE JOIN);
 GO
